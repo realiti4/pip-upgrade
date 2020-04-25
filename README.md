@@ -1,5 +1,5 @@
 # pip-upgrade
-An easy tool for upgrading packages while not breaking dependencies
+An easy tool for upgrading all of your packages while not breaking dependencies
 
 ## Installation
 
@@ -9,3 +9,6 @@ An easy tool for upgrading packages while not breaking dependencies
 
 ### version 0.2.0
 Just run 'pip-upgrade' in your terminal while virtualenv is active.
+
+    $ pip-upgrade
+    
