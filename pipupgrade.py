@@ -8,8 +8,6 @@ from pkg_resources import get_distribution
 packages = [dist.project_name for dist in pkg_resources.working_set]
 packages.remove('pip')
 
-# outdated = call("pip list --outdated --format=json")
-
 # call("pip install --upgrade " + ' '.join(packages), shell=True)
 
 main_pkg = 'gym'
@@ -44,12 +42,10 @@ for key, value in dep.items():
         for item in value:
             if not len(item[1]) == 0:
                 if item[0] in final_dep_dict:
-                    # check_if_needed(item)
 
                     for dep_i in item[1]:
-                        if dep_i[0] == '>=':
-                            pass
-                        else:
+                        if not dep_i[0] == '>=':
+                        
                             # TODO compare which one is lower
 
                             stored_version = final_dep_dict[item[0]]
@@ -61,23 +57,21 @@ for key, value in dep.items():
 
                                     final_dep_dict[item[0]] = new_value
                                 else:   
-                                    # if dep_i[0] or stored_version[0] == '!=':
-                                    print('TODO select best option')    
-                                    
-                                    # raise Exception('TODO select best option')
+                                    # TODO select what to do if symbol is different
+                                    print('TODO select best option')
+                                    if '<' in dep_i:
+                                        final_dep_dict[item[0]] = dep_i
+                                    elif '<' in stored_version:
+                                        pass
+                                    else:                                    
+                                        raise Exception('TODO select best option')
                             
                 else:
                     check_if_needed(item)
-                    # final_dep_dict[item[0]] = item[1]
-                # print('test')
 
 for i, pkg in enumerate(packages):
-    # print(i)
-    # print(pkg)
     if pkg in final_dep_dict:
         packages[i] = pkg+final_dep_dict[pkg][0]+final_dep_dict[pkg][1]
-
-test = "pip install --upgrade " + ' '.join(packages)
 
 call("pip freeze > temp_current.txt", shell=True)
 
@@ -91,10 +85,7 @@ with open('temp_current.txt', 'r') as f:
             if not 'http' in line:
                 split = line.split('==')
                 name = split[0]
-                try:
-                    version = split[1]
-                except:
-                    print('heey')
+                version = split[1]
 
                 if name in final_dep_dict:
                     dep_value = final_dep_dict[name]
