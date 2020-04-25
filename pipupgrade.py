@@ -51,8 +51,20 @@ for key, value in dep.items():
                             pass
                         else:
                             # TODO compare which one is lower
-                            raise Exception('TODO compare which one is lower')
-                            # final_dep_dict[item[0]] = dep_i
+
+                            stored_version = final_dep_dict[item[0]]
+
+                            if not dep_i == stored_version:
+                                if dep_i[0] == stored_version[0]:
+                                    stricker_version = dep_i[1] if dep_i[1] < stored_version[1] else stored_version[1]
+                                    new_value = (dep_i[0], stricker_version)
+
+                                    final_dep_dict[item[0]] = new_value
+                                else:   
+                                    # if dep_i[0] or stored_version[0] == '!=':
+                                    print('TODO select best option')    
+                                    
+                                    # raise Exception('TODO select best option')
                             
                 else:
                     check_if_needed(item)
