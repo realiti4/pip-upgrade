@@ -69,9 +69,9 @@ for key, value in dep.items():
                 else:
                     check_if_needed(item)
 
-for i, pkg in enumerate(packages):
-    if pkg in final_dep_dict:
-        packages[i] = pkg+final_dep_dict[pkg][0]+final_dep_dict[pkg][1]
+# for i, pkg in enumerate(packages):
+#     if pkg in final_dep_dict:
+#         packages[i] = pkg+final_dep_dict[pkg][0]+final_dep_dict[pkg][1]
 
 call("pip freeze > temp_current.txt", shell=True)
 
