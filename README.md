@@ -1,5 +1,11 @@
 # pip-upgrade
 An easy tool for upgrading packages while not breaking dependencies
 
-### version 0.10:
-Just run 'pip-upgrade.py' on your virtualenv directory while it's activate.
+## Installation
+
+    git clone https://github.com/realiti4/pip-upgrade.git
+    cd pip-upgrade
+    pip install .
+
+### version 0.2.0
+Just run 'pip-upgrade' in your terminal while virtualenv is active.
