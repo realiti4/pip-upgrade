@@ -3,6 +3,10 @@ An easy tool for upgrading all of your packages while not breaking dependencies
 
 ## Installation
 
+	pip install pip-upgrade-tool
+	
+or	
+
     git clone https://github.com/realiti4/pip-upgrade.git
     cd pip-upgrade
     pip install .

@@ -4,11 +4,11 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="pip-upgrade",
-    version="0.2",
+    name="pip-upgrade-tool",
+    version="0.2.0",
     author="Onur Cetinkol",
     author_email="realiti44@gmail.com",
-    description="An easy tool for upgrading packages while not breaking dependencies",
+    description="An easy tool for upgrading all of your packages while not breaking dependencies",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/realiti4/pip-upgrade",
