@@ -12,3 +12,5 @@ Just run 'pip-upgrade' in your terminal while virtualenv is active.
 
     $ pip-upgrade
     
+#### TODO - known issues
+Let's say x package holding y. They got an update at the same time and now x package requires y at a higher minimum version than it was holding it for. y packege won't be upgraded unless 'pip-upgrade' is run twice.
