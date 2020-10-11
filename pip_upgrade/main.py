@@ -8,4 +8,5 @@ def main():
     
     pip_upgrade.upgrade(be_upgraded)
 
-# main()
+if __name__ == "__main__":
+    main()

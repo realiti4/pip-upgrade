@@ -21,6 +21,9 @@ class PipUpgrade:
         self.packages = [dist.project_name for dist in pkg_resources.working_set]
         self.packages.remove('pip')
 
+        # self.packages = self.get_packages()
+        # self.packages.remove('pip')        
+
         self.importance_list = ['~=', '>=', '==', '!=', '<=', '<']
         self.importance_list = ['==', '~=', '<', '<=', '>', '>=', '!=']
 
@@ -30,16 +33,30 @@ class PipUpgrade:
 
         self.outdated = self.check_outdated()
 
-    def create_dict(self, packages):
-        return {x: [] for x in packages}
+    # Packages info
+    
+    def get_packages(self):
+        packages = subprocess.check_output([sys.executable, '-m', 'pip', 'list', '--format=json'])
+        packages = packages.decode("utf-8").replace("\n", "")
+        packages = json.loads(packages)
+
+        packages_list = []
+
+        for pkg in packages:
+            packages_list.append(pkg['name'])
+
+        return packages_list  
 
     def check_outdated(self):
         print('Checking outdated packages...')
         reqs = subprocess.check_output([sys.executable, '-m', 'pip', 'list', '--format=json', '--outdated'])
-        reqs = reqs.decode("utf-8").replace("\r\n", "")     # fix here
+        reqs = reqs.decode("utf-8").replace("\n", "").replace("\r", "")     # fix here
         
         outdated = json.loads(reqs)     # List
         return outdated
+
+    def create_dict(self, packages):
+        return {x: [] for x in packages}
 
     # Dependencies
 
@@ -71,21 +88,22 @@ class PipUpgrade:
 
             deps = self.dict[pkg_name]
 
-            apply_dep = self.compare_deps(deps, latest_version)
+            apply_dep = self.compare_deps(pkg_name, deps, latest_version)
 
             be_upgraded[pkg_name] = apply_dep
 
             # TODO Check if it can be upgraded
-            version_ = apply_dep[0][1]
-            sign_ = apply_dep[0][0]
-            if not version_check(apply_dep[0][1], latest_version, apply_dep[0][0]):
-                self.wont_upgrade.append(pkg_name + sign_ + version_)
+            if len(apply_dep) > 0:
+                version_ = apply_dep[0][1]
+                sign_ = apply_dep[0][0]
+                if not version_check(apply_dep[0][1], latest_version, apply_dep[0][0]):
+                    self.wont_upgrade.append(pkg_name + sign_ + version_)
 
         return be_upgraded
 
         # self.upgrade(be_upgraded)        
 
-    def compare_deps(self, deps, latest_version):
+    def compare_deps(self, pkg_name, deps, latest_version):
         """
             Compares dependencies in a list and decides what packages' final version should be
         """
@@ -108,7 +126,7 @@ class PipUpgrade:
                     raise Exception('TODO - This will be improved, please try pip-upgrade-legacy for now')
                 else:
                     return store
-
+        return store
 
     def _getDependencies(self):
         for pkg_test in self.packages:
@@ -170,18 +188,5 @@ class PipUpgrade:
             if cont_upgrade:
                 subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', *packages])
 
-        print('All packages are up to date!')
-    
-    
-    # Useful tools for warnings
-
-    def name_check(self, name):
-        """
-            Package and dependencie name sometimes can't be matched because of upper lower case.
-            - Pass these packages, and give a warning for now. TODO find a better solution
-        """
-        try:
-            self.dict[name]
-        except:
-            print(f'There is a problem with package {name}')
+        print('All packages are up to date!')    
             
