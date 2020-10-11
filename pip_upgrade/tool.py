@@ -188,5 +188,5 @@ class PipUpgrade:
             if cont_upgrade:
                 subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', *packages])
 
-        print('All packages are up to date!')    
+        print('All packages are up to date! 🎉')    
             
