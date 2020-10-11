@@ -14,8 +14,8 @@ class PipUpgrade:
         self.packages = [dist.project_name for dist in pkg_resources.working_set]
         self.packages.remove('pip')
 
-        self.importance_list = ['~=', '!=', '>=', '<', '==']
-        self.importance_list = ['==', '~=', '<', '>=']
+        self.importance_list = ['~=', '>=', '==', '!=', '<=', '<']
+        self.importance_list = ['==', '~=', '<', '<=', '>', '>=', '!=']
 
         self.len = len(self.packages)
         
@@ -43,6 +43,17 @@ class PipUpgrade:
 
         self._getDependencies()
 
+        # Debug
+        # test = []
+
+        # for key, value in self.dict.items():
+        #     # value = value[0]
+        #     if len(value) > 0:
+        #         test.append(value[0][0])
+
+        # print(list( dict.fromkeys(test) ))
+        # print('debug')
+
         be_upgraded = {}
 
         for pkg_dict in self.outdated:
@@ -52,7 +63,7 @@ class PipUpgrade:
 
             deps = self.dict[pkg_name]
 
-            apply_dep = self.compare_deps(deps, latest_version)
+            apply_dep = self.compare_deps(pkg_name, deps, latest_version)
 
             be_upgraded[pkg_name] = apply_dep
 
@@ -60,7 +71,7 @@ class PipUpgrade:
 
         # self.upgrade(be_upgraded)        
 
-    def compare_deps(self, deps, latest_version):
+    def compare_deps(self, pkg_name, deps, latest_version):
         """
             Compares dependencies in a list and decides what packages' final version should be
         """
@@ -96,14 +107,15 @@ class PipUpgrade:
             for i in dep_list:
                 name = i.key        # Name of dependency
                 specs = i.specs     # Specs of dependency
-
-                try:
-                    if len(self.dict[name]) > 0:
-                        self.dict[name].append(specs)
-                    else:
-                        self.dict[name] = specs
-                except:
-                    print(f'Skipping {name}, warning: Name mismatch. Manually upgrade if needed')
+                
+                if len(specs) != 0:
+                    try:
+                        if len(self.dict[name]) > 0:
+                            self.dict[name].append(specs)
+                        else:
+                            self.dict[name] = specs
+                    except:
+                        print(f'Skipping {name}, warning: Name mismatch. Manually upgrade if needed')
 
     # Upgrade
     
