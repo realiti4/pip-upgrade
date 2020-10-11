@@ -133,8 +133,11 @@ class PipUpgrade:
 
     # Upgrade
 
-    def pre_upgrade(self):
-        pass
+    def clear_list(self, packages):
+        for item in self.wont_upgrade:
+            if item in packages:
+                packages.remove(item)
+        return packages
     
     def upgrade(self, be_upgraded):
         packages = []
@@ -151,18 +154,23 @@ class PipUpgrade:
         
         # packages = " ".join(str(x) for x in packages)
 
-        # User input
-        print(f'These packages will be upgraded: {packages}')
-        cont_upgrade = input('Continue? (y/n): ')
-        if cont_upgrade.lower() == 'y':
-            cont_upgrade = True
-        elif cont_upgrade.lower() == 'n':
-            cont_upgrade = False
-        else:
-            raise Exception
-        
-        if cont_upgrade:
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', *packages])
+        packages = self.clear_list(packages)
+
+        if len(packages) > 0:
+            # User input
+            print(f'These packages will be upgraded: {packages}')
+            cont_upgrade = input('Continue? (y/n): ')
+            if cont_upgrade.lower() == 'y':
+                cont_upgrade = True
+            elif cont_upgrade.lower() == 'n':
+                cont_upgrade = False
+            else:
+                raise Exception
+            
+            if cont_upgrade:
+                subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', *packages])
+
+        print('All packages are up to date!')
     
     
     # Useful tools for warnings
