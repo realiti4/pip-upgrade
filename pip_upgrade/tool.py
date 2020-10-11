@@ -9,6 +9,8 @@ from pkg_resources import get_distribution
 
 from pip_upgrade.version_checker import version_check
 
+from pip._vendor import pkg_resources
+
 """
     TODO
     - check if virtualenv is active
@@ -24,7 +26,6 @@ class PipUpgrade:
         # self.packages = self.get_packages()
         # self.packages.remove('pip')        
 
-        self.importance_list = ['~=', '>=', '==', '!=', '<=', '<']
         self.importance_list = ['==', '~=', '<', '<=', '>', '>=', '!=']
 
         self.len = len(self.packages)
@@ -65,21 +66,10 @@ class PipUpgrade:
             The main func for getting dependencies and comparing them to output a final list
         """
 
-        self._getDependencies()
-
-        # Debug
-        # test = []
-
-        # for key, value in self.dict.items():
-        #     # value = value[0]
-        #     if len(value) > 0:
-        #         test.append(value[0][0])
-
-        # print(list( dict.fromkeys(test) ))
-        # print('debug')
+        self.retrieve_dependencies()
 
         be_upgraded = {}
-        self.wont_upgrade = []      # TODO
+        self.wont_upgrade = []
 
         for pkg_dict in self.outdated:
             pkg_name = pkg_dict['name']
@@ -100,8 +90,6 @@ class PipUpgrade:
                     self.wont_upgrade.append(pkg_name + sign_ + version_)
 
         return be_upgraded
-
-        # self.upgrade(be_upgraded)        
 
     def compare_deps(self, pkg_name, deps, latest_version):
         """
@@ -128,16 +116,16 @@ class PipUpgrade:
                     return store
         return store
 
-    def _getDependencies(self):
-        for pkg_test in self.packages:
+    def retrieve_dependencies(self):
+        for pkg_main in self.packages:
 
-            dep_list = get_distribution(pkg_test)._dep_map
-            dep_list = dep_list.get(None)
-
-            name_mismatch_dev = []
+            try:
+                dep_list = pkg_resources.working_set.by_key[pkg_main].requires()
+            except:
+                dep_list = pkg_resources.working_set.by_key[pkg_main.lower()].requires()
 
             for i in dep_list:
-                name = i.key        # Name of dependency
+                name = i.name        # Name of dependency
                 specs = i.specs     # Specs of dependency
                 
                 if len(specs) != 0:
@@ -166,11 +154,6 @@ class PipUpgrade:
             else:
                 packages.append(key + value[0][0] + value[0][1])
                 pkg = key + value[0][0] + value[0][1]
-
-            # call("pip install -U " + pkg, shell=True)
-            # subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', pkg])
-        
-        # packages = " ".join(str(x) for x in packages)
 
         packages = self.clear_list(packages)
 
