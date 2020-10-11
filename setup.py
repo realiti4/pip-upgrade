@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pip-upgrade-tool",
-    version="0.3.3",
+    version="0.3.4",
     author="Onur Cetinkol",
     author_email="realiti44@gmail.com",
     description="An easy tool for upgrading all of your packages while not breaking dependencies",
@@ -23,5 +23,5 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     packages=["pip_upgrade"],
-    # install_requires=["pandas", "requests"],
+    install_requires=["packaging"],
 )
