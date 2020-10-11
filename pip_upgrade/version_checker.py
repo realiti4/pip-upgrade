@@ -32,8 +32,12 @@ def version_check(apply_dep, latest_version, sign):
 
     return result
     
-    
+def min_dependency(deps):
+    deps_list = []
 
+    for dep in deps:
+        _sign = dep[0]
+        _version = dep[1]
+        deps_list.append(version.parse(_version))
 
-
-    print('debug')
+    return [_sign, str(min(deps_list))]
