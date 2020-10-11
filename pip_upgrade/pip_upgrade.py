@@ -102,3 +102,5 @@ def main():
 
     os.remove('temp_current.txt')
     os.remove('temp_target.txt')
+
+main()    
