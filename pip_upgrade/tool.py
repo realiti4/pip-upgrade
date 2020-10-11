@@ -7,7 +7,7 @@ import subprocess
 
 from pkg_resources import get_distribution
 
-from pip_upgrade.version_checker import version_check
+from pip_upgrade.version_checker import version_check, min_dependency
 
 from pip._vendor import pkg_resources
 
@@ -110,8 +110,8 @@ class PipUpgrade:
 
             if done:
                 if len(store) > 1:
-                    print('TODO')
-                    raise Exception('TODO - This will be improved, please try pip-upgrade-legacy for now')
+                    # TODO check if taking min always is the right thing here
+                    return [min_dependency(store)]
                 else:
                     return store
         return store
