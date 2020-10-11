@@ -20,5 +20,3 @@ Just run 'pip-upgrade' in your terminal while virtualenv is active.
 - Gets dependencies in lower case, so skips packages like Pillow and Cython. This'll be improved.
 
 - Add an arg to not upgrade local packapes installed with 'pip install .'
-
-- This should be fixed with 0.3.0 - Let's say x package holding y. They got an update at the same time and now x package requires y at a higher minimum version than it was holding it for. y packege won't be upgraded unless 'pip-upgrade' is run twice.
