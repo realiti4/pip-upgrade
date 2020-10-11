@@ -7,7 +7,14 @@ import subprocess
 
 from pkg_resources import get_distribution
 
+from pip_upgrade.version_checker import version_check
 
+"""
+    TODO
+    - check if virtualenv is active
+    - don't upgrade locally installed packages
+    - further testing is needed
+"""
 
 class PipUpgrade:
     def __init__(self):
@@ -55,6 +62,7 @@ class PipUpgrade:
         # print('debug')
 
         be_upgraded = {}
+        self.wont_upgrade = []      # TODO
 
         for pkg_dict in self.outdated:
             pkg_name = pkg_dict['name']
@@ -63,15 +71,21 @@ class PipUpgrade:
 
             deps = self.dict[pkg_name]
 
-            apply_dep = self.compare_deps(pkg_name, deps, latest_version)
+            apply_dep = self.compare_deps(deps, latest_version)
 
             be_upgraded[pkg_name] = apply_dep
+
+            # TODO Check if it can be upgraded
+            version_ = apply_dep[0][1]
+            sign_ = apply_dep[0][0]
+            if not version_check(apply_dep[0][1], latest_version, apply_dep[0][0]):
+                self.wont_upgrade.append(pkg_name + sign_ + version_)
 
         return be_upgraded
 
         # self.upgrade(be_upgraded)        
 
-    def compare_deps(self, pkg_name, deps, latest_version):
+    def compare_deps(self, deps, latest_version):
         """
             Compares dependencies in a list and decides what packages' final version should be
         """
@@ -91,7 +105,7 @@ class PipUpgrade:
             if done:
                 if len(store) > 1:
                     print('TODO')
-                    raise Exception
+                    raise Exception('TODO - This will be improved, please try pip-upgrade-legacy for now')
                 else:
                     return store
 
@@ -115,9 +129,12 @@ class PipUpgrade:
                         else:
                             self.dict[name] = specs
                     except:
-                        print(f'Skipping {name}, warning: Name mismatch. Manually upgrade if needed')
+                        print(f'Skipping {name}, warning: Name mismatch. This will be improved. Manually upgrade if needed')
 
     # Upgrade
+
+    def pre_upgrade(self):
+        pass
     
     def upgrade(self, be_upgraded):
         packages = []

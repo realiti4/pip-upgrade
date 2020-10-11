@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pip-upgrade-tool",
-    version="0.2.2",
+    version="0.3.0",
     author="Onur Cetinkol",
     author_email="realiti44@gmail.com",
     description="An easy tool for upgrading all of your packages while not breaking dependencies",
@@ -13,7 +13,8 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/realiti4/pip-upgrade",
     entry_points = {
-        'console_scripts': ['pip-upgrade = pip_upgrade:legacy', 'pip-upgrade-dev = pip_upgrade:main'],
+        'console_scripts': ['pip-upgrade = pip_upgrade:main',
+                            'pip-upgrade-legacy = pip_upgrade:legacy'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
