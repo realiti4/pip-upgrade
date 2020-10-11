@@ -17,6 +17,4 @@ Just run 'pip-upgrade' in your terminal while virtualenv is active.
     $ pip-upgrade
     
 #### TODO - known issues
-- Gets dependencies in lower case, so skips packages like Pillow and Cython. This'll be improved.
-
 - Add an arg to not upgrade local packapes installed with 'pip install .'
