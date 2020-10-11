@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pip-upgrade-tool",
-    version="0.3.4",
+    version="0.3.5",
     author="Onur Cetinkol",
     author_email="realiti44@gmail.com",
     description="An easy tool for upgrading all of your packages while not breaking dependencies",
