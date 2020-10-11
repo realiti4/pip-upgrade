@@ -91,6 +91,8 @@ class PipUpgrade:
             dep_list = get_distribution(pkg_test)._dep_map
             dep_list = dep_list.get(None)
 
+            name_mismatch_dev = []
+
             for i in dep_list:
                 name = i.key        # Name of dependency
                 specs = i.specs     # Specs of dependency
@@ -101,7 +103,7 @@ class PipUpgrade:
                     else:
                         self.dict[name] = specs
                 except:
-                    print(f'There is a problem with package {name}')
+                    print(f'Skipping {name}, warning: Name mismatch. Manually upgrade if needed')
 
     # Upgrade
     
@@ -115,12 +117,23 @@ class PipUpgrade:
                 packages.append(key + value[0][0] + value[0][1])
                 pkg = key + value[0][0] + value[0][1]
 
-            call("pip install -U " + pkg, shell=True)
+            # call("pip install -U " + pkg, shell=True)
+            # subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', pkg])
         
-        packages = " ".join(str(x) for x in packages)
+        # packages = " ".join(str(x) for x in packages)
+
+        # User input
+        print(f'These packages will be upgraded: {packages}')
+        cont_upgrade = input('Continue? (y/n): ')
+        if cont_upgrade.lower() == 'y':
+            cont_upgrade = True
+        elif cont_upgrade.lower() == 'n':
+            cont_upgrade = False
+        else:
+            raise Exception
         
-        # call("pip install -U " + packages, shell=True)
-            
+        if cont_upgrade:
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', *packages])
     
     
     # Useful tools for warnings

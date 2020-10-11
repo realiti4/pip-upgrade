@@ -1,7 +1,4 @@
-
-
-from tool import PipUpgrade
-
+from pip_upgrade.tool import PipUpgrade
 
 
 def main():
@@ -11,7 +8,4 @@ def main():
     
     pip_upgrade.upgrade(be_upgraded)
 
-
-
-
-main()
+# main()

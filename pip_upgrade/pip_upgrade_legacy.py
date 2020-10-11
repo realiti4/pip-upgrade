@@ -5,7 +5,7 @@ from subprocess import call
 from pkg_resources import get_distribution
 
 
-def main():
+def legacy():
     packages = [dist.project_name for dist in pkg_resources.working_set]
     packages.remove('pip')
 
@@ -102,5 +102,3 @@ def main():
 
     os.remove('temp_current.txt')
     os.remove('temp_target.txt')
-
-main()    
