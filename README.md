@@ -12,9 +12,14 @@ or
     pip install .
 
 ### version 0.3.7
-Just run 'pip-upgrade' in your terminal while virtualenv is active.
+Just run `pip-upgrade` in your terminal while virtualenv is active.
 
     $ pip-upgrade
+
+```
+Checking outdated packages...
+All packages are up to date! 🎉
+```
 
 ### Options
 - `pip-upgrade --local`	By default locally installed editable packages (installed with `pip install . -e`) won't be upgraded. Use this option to upgrade everything.
