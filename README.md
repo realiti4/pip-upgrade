@@ -11,10 +11,14 @@ or
     cd pip-upgrade
     pip install .
 
-### version 0.3.0
+### version 0.3.7
 Just run 'pip-upgrade' in your terminal while virtualenv is active.
 
     $ pip-upgrade
-    
+
+### Options
+- `pip-upgrade --local`	By default locally installed editable packages (installed with `pip install . -e`) won't be upgraded. Use this option to upgrade everything.
+- `pip-upgrade --novenv` By default the tool won't work if virtualenv is not active. Use this if you want use it globally and pass the assertion error.
+
 #### TODO - known issues
-- Add an arg to not upgrade local packapes installed with 'pip install .'
+- With some packages, there might be name check errors, because of dependency and package name case differences. Tools skips these and gives a warning for now. This will be improved.
