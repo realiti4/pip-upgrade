@@ -1,3 +1,7 @@
+"""
+    An old template version of the tool. It can be used by pip-upgrade-legacy but it is not recommended. This will be deleted.
+"""
+
 import os
 import pkg_resources
 from subprocess import call
