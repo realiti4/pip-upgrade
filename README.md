@@ -11,7 +11,8 @@ or
     cd pip-upgrade
     pip install .
 
-### version 0.3.7
+## Usage
+#### version 0.3.7
 Just run `pip-upgrade` in your terminal while virtualenv is active.
 
     $ pip-upgrade
