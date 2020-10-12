@@ -24,7 +24,9 @@ class PipUpgrade:
         self.packages.remove('pip')
 
         # self.packages = self.get_packages()
-        # self.packages.remove('pip')        
+        # self.packages.remove('pip')
+
+        self.editable = self.get_packages(editable=True)
 
         self.importance_list = ['==', '~=', '<', '<=', '>', '>=', '!=']
 
@@ -36,8 +38,15 @@ class PipUpgrade:
 
     # Packages info
     
-    def get_packages(self):
-        packages = subprocess.check_output([sys.executable, '-m', 'pip', 'list', '--format=json'])
+    def get_packages(self, editable=False):
+        """
+            This gets packages from pip, but it might be slower. Maybe use this later.
+        """
+        arg_list = [sys.executable, '-m', 'pip', 'list', '--format=json']
+        if editable:
+            arg_list.append('--editable')
+
+        packages = subprocess.check_output(arg_list)
         packages = packages.decode("utf-8").replace("\n", "")
         packages = json.loads(packages)
 
@@ -54,6 +63,12 @@ class PipUpgrade:
         reqs = reqs.decode("utf-8").replace("\n", "").replace("\r", "")     # fix here
         
         outdated = json.loads(reqs)     # List
+        
+        # Remove editable(local) packages from packages that will be upgraded, if enabled
+        for i, item in enumerate(outdated):
+            if item['name'] in self.editable:
+                outdated.pop(i)
+
         return outdated
 
     def create_dict(self, packages):
@@ -135,15 +150,21 @@ class PipUpgrade:
                         else:
                             self.dict[name] = specs
                     except:
-                        print(f'Skipping {name}, warning: Name mismatch. This will be improved. Manually upgrade if needed')
+                        if name == 'pillow':    # TODO fix lower case completely
+                            self.dict['Pillow'] = specs
+                        else:
+                            print(f'Skipping {name}, warning: Name mismatch. This will be improved. Manually upgrade if needed')
 
     # Upgrade
 
-    def clear_list(self, packages):
-        for item in self.wont_upgrade:
-            if item in packages:
-                packages.remove(item)
-        return packages
+    def clear_list(self, main, subtract):
+        """
+            Removes subtract's elements from main
+        """
+        for item in subtract:
+            if item in main:
+                main.remove(item)
+        return main
     
     def upgrade(self, be_upgraded):
         packages = []
@@ -155,7 +176,7 @@ class PipUpgrade:
                 packages.append(key + value[0][0] + value[0][1])
                 pkg = key + value[0][0] + value[0][1]
 
-        packages = self.clear_list(packages)
+        packages = self.clear_list(packages, self.wont_upgrade)
 
         if len(packages) > 0:
             # User input
