@@ -1,10 +1,6 @@
 from packaging import version
 
 
-# class version_check:
-#     def __init__(self):
-#         self.sign_dict = ['==', '~=', '<', '<=', '>', '>=', '!=']    
-
 def version_check(apply_dep, latest_version, sign):
     # TODO find a better way
     # TODO check if it is correct

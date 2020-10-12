@@ -19,21 +19,22 @@ from pip._vendor import pkg_resources
 """
 
 class PipUpgrade:
-    def __init__(self):
+    def __init__(self, args):
+        self.args = args
         self.packages = [dist.project_name for dist in pkg_resources.working_set]
         self.packages.remove('pip')
 
         # self.packages = self.get_packages()
         # self.packages.remove('pip')
 
-        self.editable = self.get_packages(editable=True)
+        self.exclude_editable = False if self.args.local else True
+        if self.exclude_editable:
+            self.editable = self.get_packages(editable=True)    # TODO Check if it returns empty list when there is none
 
         self.importance_list = ['==', '~=', '<', '<=', '>', '>=', '!=']
-
         self.len = len(self.packages)
         
         self.dict = self.create_dict(self.packages)
-
         self.outdated = self.check_outdated()
 
     # Packages info
@@ -65,9 +66,11 @@ class PipUpgrade:
         outdated = json.loads(reqs)     # List
         
         # Remove editable(local) packages from packages that will be upgraded, if enabled
-        for i, item in enumerate(outdated):
-            if item['name'] in self.editable:
-                outdated.pop(i)
+        if self.exclude_editable:
+            # print(f'Excluding locally installed packages: {self.editable}')
+            for i, item in enumerate(outdated):
+                if item['name'] in self.editable:
+                    outdated.pop(i)
 
         return outdated
 

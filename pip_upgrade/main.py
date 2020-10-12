@@ -4,8 +4,8 @@ import argparse
 from pip_upgrade.tool import PipUpgrade
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--local', default='CartPole-v0', help='Training environment')
-parser.add_argument('--novenv', default='CartPole-v0', help='Training environment')
+parser.add_argument('--local', action='store_true', help='Upgrades local packages as well')
+parser.add_argument('--novenv', action='store_true', help='Disables venv check')
 
 args = parser.parse_args()
 
@@ -14,12 +14,13 @@ def check_venv():
     """
         Checks if virtualenv is active, throws an asssertion error if not
     """
-    assert not sys.prefix == sys.base_prefix, 'Please use pip-upgrade in a virtualenv'
+    if not args.novenv:
+        assert not sys.prefix == sys.base_prefix, 'Please use pip-upgrade in a virtualenv'
 
 def main():
     check_venv()
 
-    pip_upgrade = PipUpgrade()
+    pip_upgrade = PipUpgrade(args)
 
     be_upgraded = pip_upgrade.get_dependencies()
     
