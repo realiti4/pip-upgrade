@@ -1,11 +1,6 @@
 .vscode
-data/bitfinex
-data/bitstamp
-data/other
-data/tradingview/backup
 git-repos
 colab/
-checkpoints/pytorch/seq2seq/testing/colab
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
