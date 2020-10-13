@@ -26,4 +26,4 @@ All packages are up to date! 🎉
 - `pip-upgrade --novenv` By default the tool won't work if virtualenv is not active. Use this if you want use it globally and pass the assertion error.
 
 #### TODO - known issues
-- With some packages, there might be name check errors, because of dependency and package name case differences. Tools skips these and gives a warning for now. This will be improved.
+- With some packages, there might be name check errors, because of dependency and package name case differences. Tool skips these and gives a warning for now. I only run into Pillow so far, and there is a manual fix for that. There might be other packages, this will be improved.
