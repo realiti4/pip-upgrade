@@ -93,7 +93,7 @@ class PipUpgrade:
         self.retrieve_dependencies()
 
         be_upgraded = {}
-        self.wont_upgrade = []
+        self.wont_upgrade = {}
 
         for pkg_dict in self.outdated:
             pkg_name = pkg_dict['name']
@@ -111,7 +111,7 @@ class PipUpgrade:
                 version_ = apply_dep[0][1]
                 sign_ = apply_dep[0][0]
                 if not version_check(apply_dep[0][1], latest_version, apply_dep[0][0]):
-                    self.wont_upgrade.append(pkg_name + sign_ + version_)
+                    self.wont_upgrade[pkg_name] = sign_ + version_
 
         return be_upgraded
 
@@ -172,34 +172,42 @@ class PipUpgrade:
         """
         for item in subtract:
             if item in main:
-                main.remove(item)
+                main.pop(item, None)
         return main
     
     def upgrade(self, be_upgraded):
         packages = []
-        for key, value in be_upgraded.items():
+        packages = {}
+        for name, value in be_upgraded.items():
             if not value:
-                packages.append(key)
-                pkg = key
+                packages[name] = ''
+                pkg = name
             else:
-                packages.append(key + value[0][0] + value[0][1])
-                pkg = key + value[0][0] + value[0][1]
+                packages[name] = value[0][0] + value[0][1]
+                pkg = name + value[0][0] + value[0][1]
 
         packages = self.clear_list(packages, self.wont_upgrade)
 
         if len(packages) > 0:
             # User input
-            print(f'These packages will be upgraded: {packages}')
+            print(f'These packages will be upgraded: {list(packages.keys())}')
             cont_upgrade = input('Continue? (y/n): ')
             if cont_upgrade.lower() == 'y':
                 cont_upgrade = True
             elif cont_upgrade.lower() == 'n':
                 cont_upgrade = False
-            elif cont_upgrade.startswith('-e'): # TODO take exclude arg here
-                exclude = cont_upgrade.split(" ").pop('-e')
+            elif cont_upgrade.startswith('-e'): # TODO take exclude arg here, test this further
+                exclude = cont_upgrade.split(" ")
+                exclude.remove('-e')
+                self.clear_list(packages, exclude)
+                cont_upgrade = True if len(packages) > 0 else False
             else:
-                print('Accepted inputs are: y/n or -e PackageNames\nCanceling...')
+                print('Please use one of the accepted inputs (y/n or -e PackageNames)\nCanceling...')
                 cont_upgrade = False
+            
+            # Prepare packages dict
+            packages = list(packages.items())
+            packages = [''.join(x) for x in packages]
             
             if cont_upgrade:
                 subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', *packages])
