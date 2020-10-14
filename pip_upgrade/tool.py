@@ -166,13 +166,16 @@ class PipUpgrade:
 
     # Upgrade
 
-    def clear_list(self, main, subtract):
+    def clear_list(self, main, subtract, check_input_error=False):
         """
             Removes subtract's elements from main
         """
         for item in subtract:
             if item in main:
-                main.pop(item, None)
+                main.pop(item)
+            else:
+                if check_input_error:
+                    raise Exception(f'{item} is not in upgradable packages. This error is for safety incase of typos')
         return main
     
     def upgrade(self, be_upgraded):
@@ -199,7 +202,7 @@ class PipUpgrade:
             elif cont_upgrade.startswith('-e'): # TODO take exclude arg here, test this further
                 exclude = cont_upgrade.split(" ")
                 exclude.remove('-e')
-                self.clear_list(packages, exclude)
+                self.clear_list(packages, exclude, check_input_error=True)
                 cont_upgrade = True if len(packages) > 0 else False
             else:
                 print('Please use one of the accepted inputs (y/n or -e PackageNames)\nCanceling...')
