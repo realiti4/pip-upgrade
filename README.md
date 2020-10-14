@@ -16,7 +16,7 @@ Just run `pip-upgrade` in your terminal while virtualenv is active.
 
     $ pip-upgrade
 
-Exclude packages you don't want to upgrade with `-e` or `--exclude`
+If there are packages you want to exclude use `-e` or `--exclude`. The tool won't upgrade dependency breaking packages already, this is extra for packages that you want to keep a version.
 
     $ pip-upgrade -e numpy pandas
 
