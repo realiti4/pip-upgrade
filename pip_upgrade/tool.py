@@ -195,8 +195,11 @@ class PipUpgrade:
                 cont_upgrade = True
             elif cont_upgrade.lower() == 'n':
                 cont_upgrade = False
+            elif cont_upgrade.startswith('-e'): # TODO take exclude arg here
+                exclude = cont_upgrade.split(" ").pop('-e')
             else:
-                raise Exception
+                print('Accepted inputs are: y/n or -e PackageNames\nCanceling...')
+                cont_upgrade = False
             
             if cont_upgrade:
                 subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', *packages])
