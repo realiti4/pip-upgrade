@@ -1,5 +1,5 @@
 # pip-upgrade
-The purpose of pip-upgrade is to be a simple yet rebost and reliable tool for upgrading all of your packages while not breaking dependencies
+The purpose of pip-upgrade is to be a simple yet robust and reliable tool for upgrading all of your packages while not breaking dependencies
 
 ## Installation
 
