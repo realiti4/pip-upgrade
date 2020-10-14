@@ -27,6 +27,8 @@ Continue? (y/n): y
 All packages are up to date! 🎉
 ```
 
+**Tip:** You can use `-e` to exclude packages in `Continue? (y/n):` after seeing which packages are going to be upgraded.
+
 ### Options
 - `pip-upgrade -e` Exclude packages you don't want to upgrade. Can take multiple or single value.
 - `pip-upgrade --local`	By default locally installed editable packages (installed with `pip install . -e`) won't be upgraded. Use this option to upgrade everything.
