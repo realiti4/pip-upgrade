@@ -29,6 +29,9 @@ def version_check(apply_dep, latest_version, sign):
     return result
     
 def min_dependency(deps):
+    """
+        Gets min of two version
+    """
     deps_list = []
 
     for dep in deps:

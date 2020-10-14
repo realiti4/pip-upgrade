@@ -4,8 +4,9 @@ import argparse
 from pip_upgrade.tool import PipUpgrade
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--local', action='store_true', help='Upgrades local packages as well')
-parser.add_argument('--novenv', action='store_true', help='Disables venv check')
+parser.add_argument('-e', '--exclude', nargs='+', help="Exclude packages you don't want to upgrade")
+parser.add_argument('--local', action='store_true', help="Upgrades local packages as well")
+parser.add_argument('--novenv', action='store_true', help="Disables venv check")
 
 args = parser.parse_args()
 
@@ -19,6 +20,8 @@ def check_venv():
 
 def main():
     check_venv()
+
+    print(args.exclude)
 
     pip_upgrade = PipUpgrade(args)
 

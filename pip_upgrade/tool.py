@@ -13,8 +13,6 @@ from pip._vendor import pkg_resources
 
 """
     TODO
-    - check if virtualenv is active
-    - don't upgrade locally installed packages
     - further testing is needed
 """
 
@@ -27,9 +25,8 @@ class PipUpgrade:
         # self.packages = self.get_packages()
         # self.packages.remove('pip')
 
-        self.exclude_editable = False if self.args.local else True
-        if self.exclude_editable:
-            self.editable = self.get_packages(editable=True)    # TODO Check if it returns empty list when there is none
+        if not self.args.local:     # Exclude editable packages
+            self.editable_packages = self.get_packages(editable=True)    # TODO Check if it returns empty list when there is none
 
         self.importance_list = ['==', '~=', '<', '<=', '>', '>=', '!=']
         self.len = len(self.packages)
@@ -64,12 +61,15 @@ class PipUpgrade:
         reqs = reqs.decode("utf-8").replace("\n", "").replace("\r", "")     # fix here
         
         outdated = json.loads(reqs)     # List
+
+        # Exclude editable and user defined packages
+        exclude_user = [] if self.args.exclude is None else self.args.exclude
+        excluded_pkgs = self.editable_packages + exclude_user
         
-        # Remove editable(local) packages from packages that will be upgraded, if enabled
-        if self.exclude_editable:
-            # print(f'Excluding locally installed packages: {self.editable}')
+        if not self.args.local:
+            # print(f'Excluding locally installed packages: {self.editable_packages}')
             for i, item in enumerate(outdated):
-                if item['name'] in self.editable:
+                if item['name'] in excluded_pkgs:
                     outdated.pop(i)
 
         return outdated

@@ -16,12 +16,19 @@ Just run `pip-upgrade` in your terminal while virtualenv is active.
 
     $ pip-upgrade
 
+Exclude packages you don't want to upgrade with `-e` or `--exclude`
+
+    $ pip-upgrade -e numpy pandas
+
 ```
 Checking outdated packages...
+These packages will be upgraded: ['colorama>=0.4.3', 'isort<6']
+Continue? (y/n): y
 All packages are up to date! 🎉
 ```
 
 ### Options
+- `pip-upgrade -e` Exclude packages you don't want to upgrade. Can take multiple or single value.
 - `pip-upgrade --local`	By default locally installed editable packages (installed with `pip install . -e`) won't be upgraded. Use this option to upgrade everything.
 - `pip-upgrade --novenv` By default the tool won't work if virtualenv is not active. Use this if you want use it globally and pass the assertion error.
 
