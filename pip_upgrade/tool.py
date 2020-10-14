@@ -19,14 +19,17 @@ from pip._vendor import pkg_resources
 class PipUpgrade:
     def __init__(self, args):
         self.args = args
+        self.self_check = False
         self.packages = [dist.project_name for dist in pkg_resources.working_set]
         self.packages.remove('pip')
 
         # self.packages = self.get_packages()
         # self.packages.remove('pip')
 
+        # Exclude editable and user defined packages
+        self.excluded_pkgs = [] if self.args.exclude is None else self.args.exclude        
         if not self.args.local:     # Exclude editable packages
-            self.editable_packages = self.get_packages(editable=True)    # TODO Check if it returns empty list when there is none
+            self.excluded_pkgs = self.get_packages(editable=True) + self.excluded_pkgs
 
         self.importance_list = ['==', '~=', '<', '<=', '>', '>=', '!=']
         self.len = len(self.packages)
@@ -62,17 +65,20 @@ class PipUpgrade:
         
         outdated = json.loads(reqs)     # List
 
-        # Exclude editable and user defined packages
-        exclude_user = [] if self.args.exclude is None else self.args.exclude
-        excluded_pkgs = self.editable_packages + exclude_user
-        
-        if not self.args.local:
-            # print(f'Excluding locally installed packages: {self.editable_packages}')
-            for i, item in enumerate(outdated):
-                if item['name'] in excluded_pkgs:
-                    outdated.pop(i)
+        # Exclude package itself
+        for i, item in enumerate(outdated):
+            if item['name'] == 'pip-upgrade-tool':
+                self.self_check = True
+                outdated.pop(i)
 
-        return outdated
+        # Exclude other packages
+        # print(f'Excluding locally installed packages: {self.excluded_pkgs}')
+        outdated_return = []
+        for i, item in enumerate(outdated):
+            if not item['name'] in self.excluded_pkgs:
+                outdated_return.append(item)
+
+        return outdated_return
 
     def create_dict(self, packages):
         return {x: [] for x in packages}
@@ -195,5 +201,8 @@ class PipUpgrade:
             if cont_upgrade:
                 subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', *packages])
 
-        print('All packages are up to date! 🎉')    
+        print('All packages are up to date! 🎉')
+        
+        if self.self_check:
+            print("A new update avaliable for pip-upgrade-tool.\nPlease manually upgrade the tool using 'python -m pip install -U pip-upgrade-tool'")
             

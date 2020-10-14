@@ -21,8 +21,6 @@ def check_venv():
 def main():
     check_venv()
 
-    print(args.exclude)
-
     pip_upgrade = PipUpgrade(args)
 
     be_upgraded = pip_upgrade.get_dependencies()
