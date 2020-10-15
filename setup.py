@@ -13,8 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/realiti4/pip-upgrade",
     entry_points = {
-        'console_scripts': ['pip-upgrade = pip_upgrade:main',
-                            'pip-upgrade-legacy = pip_upgrade:legacy'],
+        'console_scripts': ['pip-upgrade = pip_upgrade:main'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
