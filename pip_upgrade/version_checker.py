@@ -11,7 +11,7 @@ def version_check(apply_dep, latest_version, sign):
 
     if key == 0:
         result = version.parse(apply_dep) == version.parse(latest_version)
-    elif key == 0:  # TODO '~=' what is this?
+    elif key == 1:  # TODO '~=' what is this?
         result = True
     elif key == 2:
         result = version.parse(latest_version) < version.parse(apply_dep)
