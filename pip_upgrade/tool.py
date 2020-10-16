@@ -1,11 +1,9 @@
 import os
 import sys
 import json
-# import pkg_resources
 from subprocess import call
 import subprocess
 
-from pip._vendor import pkg_resources
 from pip_upgrade.dependencies_base import DependenciesBase
 
 """
@@ -16,21 +14,13 @@ from pip_upgrade.dependencies_base import DependenciesBase
 class PipUpgrade(DependenciesBase):
     def __init__(self, args):
         super(PipUpgrade, self).__init__()
-        self.args = args
-        self.packages = [dist.project_name for dist in pkg_resources.working_set]
-        self.packages.remove('pip')
-
-        # self.packages = self.get_packages()
-        # self.packages.remove('pip')
+        self.args = args        
 
         # Exclude editable and user defined packages
         self.excluded_pkgs = [] if self.args.exclude is None else self.args.exclude        
         if not self.args.local:     # Exclude editable packages
             self.excluded_pkgs = self.get_packages(args=['--editable']) + self.excluded_pkgs
-
-        self.len = len(self.packages)
         
-        self.dict = self.create_dict(self.packages)
         self.outdated = self.check_outdated()
 
     # Packages info
@@ -72,10 +62,7 @@ class PipUpgrade(DependenciesBase):
             if not item['name'] in self.excluded_pkgs:
                 outdated_return.append(item)
 
-        return outdated_return
-
-    def create_dict(self, packages):
-        return {x: [] for x in packages}
+        return outdated_return    
 
     # Upgrade
 

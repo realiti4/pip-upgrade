@@ -2,18 +2,32 @@ from pip._vendor import pkg_resources
 from pip_upgrade.version_checker import version_check, min_dependency
 
 """
-    TODO Seperate some of the functions in tools.py
+    TODO 
+    - Create a dependency matrix which will make searching much more easy
+    - Update dep values by getting new info from pypi servers
 """
 
 
 class DependenciesBase:
     def __init__(self):
         self.self_check = False
-        self.packages = None
-        self.dict = None
+
+        self.packages = [dist.project_name for dist in pkg_resources.working_set]
+        self.packages.remove('pip')
+
+        # self.packages = self.get_packages()
+        # self.packages.remove('pip')
+        
+        self.dict = self.create_dict(self.packages)
         self.outdated = None
 
-        self.importance_list = ['==', '~=', '<', '<=', '>', '>=', '!=']       
+        self.importance_list = ['==', '~=', '<', '<=', '>', '>=', '!=']    
+    
+    def build_dep_matrix(self):
+        """
+            - One hot encoding for every package and use numpy or use pandas' indexes if we can search by name
+        """
+        raise NotImplementedError 
 
     def get_dependencies(self):
         """
@@ -96,3 +110,6 @@ class DependenciesBase:
                             self.dict['Pillow'] = specs
                         else:
                             print(f'Skipping {name}, warning: Name mismatch. This will be improved. Manually upgrade if needed')
+
+    def create_dict(self, packages):
+        return {x: [] for x in packages}
