@@ -38,4 +38,4 @@ Continue? (y/n): -e pytest hypothesis
 - `pip-upgrade --novenv` By default the tool won't work if virtualenv is not active. Use this if you want use it globally and pass the assertion error.
 
 #### TODO - known issues
-- Query dependency informations of a package from pypi servers.
+- Feature - Query dependency informations of a package from pypi servers.
