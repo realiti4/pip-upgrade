@@ -72,7 +72,7 @@ class DependenciesBase:
 
     def retrieve_dependencies(self):
         """
-            Retrieves packages' all dependencies
+            Retrieves dependencies pkg_main requires, and puts all dependent packages in self.dict with their version.
         """
         for pkg_main in self.packages:
 
@@ -88,7 +88,7 @@ class DependenciesBase:
                 if len(specs) != 0:
                     try:
                         if len(self.dict[name]) > 0:
-                            self.dict[name].append(specs)
+                            self.dict[name].append(specs[0])
                         else:
                             self.dict[name] = specs
                     except:
