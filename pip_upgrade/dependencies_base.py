@@ -13,7 +13,7 @@ class DependenciesBase:
         self.self_check = False
 
         self.packages = [dist.project_name for dist in pkg_resources.working_set]
-        self.packages.remove('pip')
+        # self.packages.remove('pip')
 
         # self.packages = self.get_packages()
         # self.packages.remove('pip')

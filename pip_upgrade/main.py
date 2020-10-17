@@ -7,6 +7,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-e', '--exclude', nargs='+', help="Exclude packages you don't want to upgrade")
 parser.add_argument('--local', action='store_true', help="Upgrades local packages as well")
 parser.add_argument('--novenv', action='store_true', help="Disables venv check")
+parser.add_argument('-q', '--query', help="Query package dependency info from pypi")
 
 args = parser.parse_args()
 
