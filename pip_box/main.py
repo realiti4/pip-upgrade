@@ -1,7 +1,7 @@
 import sys
 import argparse
 
-from pip_upgrade.tool import PipUpgrade
+from pip_box.tool import PipUpgrade
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-e', '--exclude', nargs='+', help="Exclude packages you don't want to upgrade")

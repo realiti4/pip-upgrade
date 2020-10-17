@@ -1,5 +1,5 @@
 from pip._vendor import pkg_resources
-from pip_upgrade.version_checker import version_check, min_dependency
+from pip_box.version_checker import version_check, min_dependency
 
 """
     TODO 

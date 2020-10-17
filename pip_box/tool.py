@@ -4,7 +4,7 @@ import json
 from subprocess import call
 import subprocess
 
-from pip_upgrade.dependencies_base import DependenciesBase
+from pip_box.dependencies_base import DependenciesBase
 
 """
     TODO
