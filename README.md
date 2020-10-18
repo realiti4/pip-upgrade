@@ -12,7 +12,7 @@ or
     pip install .
 
 ## Usage
-Just run `pip-box` in your terminal while virtualenv is active.
+Just run `pip-box` or `pip-upgrade` in your terminal while virtualenv is active.
 
     $ pip-box
 
