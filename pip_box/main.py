@@ -17,7 +17,7 @@ def check_venv():
         Checks if virtualenv is active, throws an asssertion error if not
     """
     if not args.novenv:
-        assert not sys.prefix == sys.base_prefix, 'Please use pip-upgrade in a virtualenv. If you would like to surpass this use pip-upgrade --novenv'
+        assert not sys.prefix == sys.base_prefix, 'Please use pip-box in a virtualenv. If you would like to surpass this use pip-box --novenv'
 
 def main():
     check_venv()

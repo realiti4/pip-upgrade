@@ -51,7 +51,7 @@ class PipUpgrade(DependenciesBase):
 
         # Exclude package itself
         for i, item in enumerate(outdated):
-            if item['name'] == 'pip-upgrade-tool':
+            if item['name'] == 'pip-box':
                 self.self_check = True
                 outdated.pop(i)
 
@@ -118,5 +118,5 @@ class PipUpgrade(DependenciesBase):
         print('All packages are up to date! 🎉')
         
         if self.self_check:
-            print("A new update avaliable for pip-upgrade-tool.\nPlease manually upgrade the tool using 'python -m pip install -U pip-upgrade-tool'")
+            print("A new update avaliable for pip-box.\nPlease manually upgrade the tool using 'python -m pip install -U pip-box'")
             
