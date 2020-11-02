@@ -24,6 +24,7 @@ If there are packages you want to exclude use `-e` or `--exclude`. The tool won'
 Checking outdated packages...
 These packages will be upgraded: ['colorama', 'isort']
 Continue? (y/n): y
+...
 All packages are up to date! 🎉
 ```
 
