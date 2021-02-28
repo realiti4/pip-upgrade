@@ -16,10 +16,6 @@ Just run `pip-upgrade` in your terminal while virtualenv is active.
 
     $ pip-upgrade
 
-If there are packages you want to exclude use `-e` or `--exclude`. The tool won't upgrade dependency breaking packages already, this is extra for packages that you want to keep it at a version.
-
-    $ pip-upgrade -e numpy pandas
-
 ```
 Checking outdated packages...
 These packages will be upgraded: ['colorama', 'isort']
@@ -33,6 +29,10 @@ All packages are up to date! 🎉
 These packages will be upgraded: ['hypothesis', 'Pillow', 'pytest', 'setuptools']
 Continue? (y/n): -e pytest hypothesis
 ```
+
+You can also exclude packages beforehand. Use `-e` or `--exclude`. The tool won't upgrade dependency breaking packages already, this is extra for packages that you want to keep it at a version.
+
+    $ pip-upgrade -e numpy pandas
 ### Options
 - `pip-upgrade -e` Exclude packages you don't want to upgrade. Can take multiple or single value.
 - `pip-upgrade --local`	By default locally installed editable packages (installed with `pip install . -e`) won't be upgraded. Use this option to upgrade everything.
