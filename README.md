@@ -39,4 +39,4 @@ You can also exclude packages beforehand. Use `-e` or `--exclude`. The tool won'
 - `pip-upgrade --novenv` By default the tool won't work if virtualenv is not active. Use this if you want use it globally and pass the assertion error.
 
 #### TODO - known issues
-- Feature - Query dependency informations of a package from pypi servers.
+
