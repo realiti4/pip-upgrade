@@ -106,9 +106,15 @@ class DependenciesBase:
                         else:
                             self.dict[name] = specs
                     except:
-                        if name == 'pillow':    # TODO fix lower case completely
-                            self.dict['Pillow'] = specs
-                        else:
+                        for key in self.dict:
+                            if key.lower() == name.lower():
+                                # print(name, key)
+                                name = key
+                        try:                            
+                            self.dict[name] = specs
+                        # if name == 'pillow':    # TODO fix lower case completely
+                        #    self.dict['Pillow'] = specs
+                        except:
                             print(f'Skipping {name}, warning: Name mismatch. This will be improved. Manually upgrade if needed')
 
     def create_dict(self, packages):
