@@ -24,7 +24,7 @@ Continue? (y/n): y
 All packages are up to date! 🎉
 ```
 
-**Tip:** You can use `-e` to exclude packages in `Continue? (y/n):` after seeing which packages are going to be upgraded.
+**Tip:** You can use `-e` to exclude packages in `Continue? (y/n):` after seeing which packages are going to be upgraded. This is super useful for packages like gohlke's Numpy+mkl for example.
 ```
 These packages will be upgraded: ['hypothesis', 'Pillow', 'pytest', 'setuptools']
 Continue? (y/n): -e pytest hypothesis
