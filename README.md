@@ -7,7 +7,7 @@ The purpose of pip-upgrade is to be a simple yet robust and reliable tool for up
 	
 or	
 
-    pip install git+https://github.com/realiti4/tradingfeatures.git@master --upgrade
+    pip install git+https://github.com/realiti4/pip-upgrade.git@master --upgrade
 
 ## Usage
 Just run `pip-upgrade` in your terminal while virtualenv is active.
