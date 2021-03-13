@@ -30,11 +30,17 @@ def clear_cache():
     output = subprocess.check_output(arg_list)
     output = output.decode("utf-8").replace("\n", "").replace("\r", "")    
 
-    try:
-        shutil.rmtree(output)
-        print('Cache is cleared..')
-    except Exception as e:
-        print(e)
+    print(f'Folder will be deleted: {output}')
+    confirm = input('Continue? (y/n): ')
+    
+    if confirm.lower() == 'y':    
+        try:
+            shutil.rmtree(output)
+            print('Cache is cleared..')
+        except Exception as e:
+            print(e)
+    else:
+        print('Aborted, if the folder was wrong, please fill an issue.')
 
 def main():
     check_venv()
