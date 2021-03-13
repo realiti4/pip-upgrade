@@ -1,9 +1,7 @@
 from packaging import version
 
 
-def version_check(apply_dep, latest_version, sign):
-    # TODO find a better way
-    # TODO check if it is correct
+def version_check(apply_dep, latest_version, sign):    
 
     sign_dict = {'==': 0, '~=': 1, '<': 2, '<=': 3, '>': 4, '>=': 5, '!=': 6}
 
