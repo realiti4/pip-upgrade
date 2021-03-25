@@ -102,19 +102,12 @@ class DependenciesBase:
                 if len(specs) != 0:
                     try:
                         self.dict[name] += specs
-                        # if len(self.dict[name]) > 0:
-                        #     self.dict[name].append(specs[0])    # why specs[0]
-                        # else:
-                        #     self.dict[name] = specs
                     except:
                         for key in self.dict:
                             if key.lower() == name.lower():
-                                # print(name, key)
                                 name = key
                         try:                            
                             self.dict[name] += specs
-                        # if name == 'pillow':    # TODO fix lower case completely
-                        #    self.dict['Pillow'] = specs
                         except:
                             print(f'Skipping {name}, warning: Name mismatch. This will be improved. Manually upgrade if needed')
 
