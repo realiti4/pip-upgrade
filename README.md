@@ -38,4 +38,5 @@ You can also exclude packages beforehand. Use `-e` or `--exclude`. The tool won'
 - `pip-upgrade --novenv` By default the tool won't work if virtualenv is not active. Use this if you want use it globally and pass the assertion error.
 
 #### TODO / known issues
+- Bug - Doesn't detect != cases if * is used (!=5.4.*)
 - Feature - Update directly from Gohlke's packages
