@@ -33,7 +33,6 @@ You can also exclude packages beforehand. Use `-e` or `--exclude`. The tool won'
     $ pip-upgrade -e numpy pandas
 ### Options
 - `pip-upgrade -e` Exclude packages you don't want to upgrade. Can take multiple or single value.
-- `pip-upgrade --clear` Clear pip's cache.
 - `pip-upgrade --local`	By default locally installed editable packages (installed with `pip install . -e`) won't be upgraded. Use this option to upgrade everything.
 - `pip-upgrade --novenv` By default the tool won't work if virtualenv is not active. Use this if you want use it globally and pass the assertion error.
 
