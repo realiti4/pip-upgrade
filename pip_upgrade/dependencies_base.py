@@ -1,5 +1,5 @@
 from pip._vendor import pkg_resources
-from pip_upgrade.version_checker import version_check, min_dependency
+from pip_upgrade.version_checker import version_check, min_dependency, not_equal_check
 
 """
     TODO 
@@ -64,19 +64,25 @@ class DependenciesBase:
             Compares dependencies in a list and decides what packages' final version should be
         """
         store = []
+        store_nonequal = []
         done = False
+
+        if not_equal_check(deps, latest_version):            
+            return [('!=', latest_version)]
         
         for i in self.importance_list:
             for index, i_dep in enumerate(deps):
                 sign, version = i_dep
 
                 # for i in self.importance_list:
+                # if sign == '!=':
+                #     store.append(['<', latest_version])
                 if sign == i:
                     store.append([sign, version])
                     done = True
                     # return store
 
-            if done:
+            if done:                
                 if len(store) > 1:
                     # TODO check if taking min always is the right thing here
                     return [min_dependency(store)]

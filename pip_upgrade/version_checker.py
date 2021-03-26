@@ -26,6 +26,21 @@ def version_check(apply_dep, latest_version, sign):
 
     return result
     
+def not_equal_check(deps, latest_version):
+
+    if any(['!=' in x for x in deps]):
+        for dep in deps:
+            _sign = dep[0]
+            _version = dep[1]
+            if _sign == '!=':
+                if '.*' in _version:
+                    _version, _ = _version.split('.*')
+
+                if latest_version[:len(_version)] == _version:
+                    return True
+                else:
+                    return False    
+
 def min_dependency(deps):
     """
         Gets min of two version
