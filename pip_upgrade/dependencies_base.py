@@ -67,8 +67,8 @@ class DependenciesBase:
         store_nonequal = []
         done = False
 
-        if not_equal_check(deps, latest_version):            
-            return [('!=', latest_version)]
+        # if not_equal_check(deps, latest_version):            
+            # return [('!=', latest_version)]
         
         for i in self.importance_list:
             for index, i_dep in enumerate(deps):
