@@ -4,8 +4,8 @@ The purpose of pip-upgrade is to be a simple yet robust and reliable tool for up
 ## Installation
 
 	pip install pip-upgrade-tool
-	
-or	
+
+or
 
     pip install git+https://github.com/realiti4/pip-upgrade.git@master --upgrade
 
@@ -36,6 +36,10 @@ You can also exclude packages beforehand. Use `-e` or `--exclude`. The tool won'
 - `pip-upgrade --clear` Clear pip's cache.
 - `pip-upgrade --local`	By default locally installed editable packages (installed with `pip install . -e`) won't be upgraded. Use this option to upgrade everything.
 - `pip-upgrade --novenv` By default the tool won't work if virtualenv is not active. Use this if you want use it globally and pass the assertion error.
+- `pip-upgrade --reset-config` Reset config file located in `~/.pipupgrade.ini` to it's default.
+
+### Permanent Configuration
+When `pip-upgrade` is run for the first time, it will create a file in the user's home directory named `.pipupgrade.ini`. This file can be manually edited by the user for permanent configuration options. The configuration file current consists of two options under the `conf` section, `exclude` and `novenv`. `novenv` is false by default, but if set to true, the `pip-upgrade` command will not require you to be in a virtualenv, which is the same function as the `--novenv` argument. The second option, `exclude`, will take the same values as the `--exclude` argument, but these excluded packages will persist forever until removed. 
 
 #### TODO / known issues
 - Bug - Doesn't detect != cases if * is used (!=5.4.*)

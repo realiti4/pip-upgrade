@@ -12,24 +12,26 @@ from pip_upgrade.dependencies_base import DependenciesBase
 """
 
 class PipUpgrade(DependenciesBase):
-    def __init__(self, args):
+    def __init__(self, args, config):
         super(PipUpgrade, self).__init__()
-        self.args = args        
+        self.args = args
+        self.config = config
 
         # Exclude editable and user defined packages
-        self.excluded_pkgs = [] if self.args.exclude is None else self.args.exclude        
+        self.excluded_pkgs = [] if self.args.exclude is None else self.args.exclude
+        self.excluded_pkgs += self.config['conf']['exclude'].split(' ')
         if not self.args.local:     # Exclude editable packages
             self.excluded_pkgs = self.get_packages(args=['--editable']) + self.excluded_pkgs
-        
+
         self.outdated = self.check_outdated()
 
     # Packages info
-    
+
     def get_packages(self, args=[]):
         """
             This gets packages from pip, but it might be slower. Maybe use this later.
         """
-        arg_list = [sys.executable, '-m', 'pip', 'list', '--format=json'] + args  
+        arg_list = [sys.executable, '-m', 'pip', 'list', '--format=json'] + args
 
         packages = subprocess.check_output(arg_list)
         packages = packages.decode("utf-8").replace("\n", "")
@@ -40,13 +42,13 @@ class PipUpgrade(DependenciesBase):
         for pkg in packages:
             packages_list.append(pkg['name'])
 
-        return packages_list  
+        return packages_list
 
     def check_outdated(self):
         print('Checking outdated packages...')
         reqs = subprocess.check_output([sys.executable, '-m', 'pip', 'list', '--format=json', '--outdated'])
         reqs = reqs.decode("utf-8").replace("\n", "").replace("\r", "")     # fix here
-        
+
         outdated = json.loads(reqs)     # List
 
         # Exclude package itself
@@ -62,7 +64,7 @@ class PipUpgrade(DependenciesBase):
             if not item['name'] in self.excluded_pkgs:
                 outdated_return.append(item)
 
-        return outdated_return    
+        return outdated_return
 
     # Upgrade
 
@@ -77,7 +79,7 @@ class PipUpgrade(DependenciesBase):
                 if check_input_error:
                     raise Exception(f'{item} is not in upgradable packages. This error is for safety incase of typos')
         return main
-    
+
     def upgrade(self, be_upgraded):
         packages = []
         packages = {}
@@ -107,16 +109,15 @@ class PipUpgrade(DependenciesBase):
             else:
                 print('Please use one of the accepted inputs (y/n or -e PackageNames)\nCanceling...')
                 cont_upgrade = False
-            
+
             # Prepare packages dict
             packages = list(packages.items())
             packages = [''.join(x) for x in packages]
-            
+
             if cont_upgrade:
                 subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', *packages])
 
         print('All packages are up to date! 🎉')
-        
+
         if self.self_check:
             print("A new update avaliable for pip-upgrade-tool.\nPlease manually upgrade the tool using 'python -m pip install -U pip-upgrade-tool'")
-            
