@@ -80,16 +80,15 @@ class PipUpgrade(DependenciesBase):
                     raise Exception(f'{item} is not in upgradable packages. This error is for safety incase of typos')
         return main
 
-    def upgrade(self, be_upgraded):
-        packages = []
+    def upgrade(self):
+        be_upgraded = self.be_upgraded
         packages = {}
         for name, value in be_upgraded.items():
             if not value:
                 packages[name] = ''
                 pkg = name
             else:
-                packages[name] = value[0][0] + value[0][1]
-                pkg = name + value[0][0] + value[0][1]
+                packages[name] = value[0] + value[1]
 
         packages = self.clear_list(packages, self.wont_upgrade)
 
