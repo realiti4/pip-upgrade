@@ -2,12 +2,6 @@ from pip._vendor import pkg_resources
 from pip_upgrade.version_checker import version_check, not_equal_check
 from pip_upgrade.store import Store
 
-"""
-    TODO 
-    - Create a dependency matrix which will make searching much more easy
-    - Update dep values by getting new info from pypi servers
-"""
-
 
 class DependenciesBase:
     def __init__(self):
