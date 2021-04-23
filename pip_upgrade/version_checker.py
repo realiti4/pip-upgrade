@@ -30,29 +30,10 @@ def version_check(dep, latest_version):
     return result
     
 def not_equal_check(version_, latest_version):
-
-    # if any(['!=' in x for x in deps]):
-    #     for dep in deps:
-    #         _sign = dep[0]
-    #         _version = dep[1]
-    #         if _sign == '!=':
     if '.*' in version_:
         version_, _ = version_.split('.*')
 
     if latest_version[:len(version_)] == version_:
         return True
     else:
-        return False    
-
-def min_dependency(deps):
-    """
-        Gets min of two version
-    """
-    deps_list = []
-
-    for dep in deps:
-        _sign = dep[0]
-        _version = dep[1]
-        deps_list.append(version.parse(_version))
-
-    return [_sign, str(min(deps_list))]
+        return False
