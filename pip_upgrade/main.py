@@ -12,6 +12,7 @@ parser.add_argument('-e', '--exclude', nargs='+', help="Exclude packages you don
 parser.add_argument('--local', action='store_true', help="Upgrades local packages as well")
 parser.add_argument('--novenv', action='store_true', help="Disables venv check")
 parser.add_argument('--clear', action='store_true', help="Clears pip's cache")
+parser.add_argument('-y', '--yes', action='store_true', help="Accept all upgrades and skip user prompt")
 parser.add_argument('--reset-config', action='store_true', help='Reset config file to default')
 parser.add_argument('-q', '--query', help="Query package dependency info from pypi")
 

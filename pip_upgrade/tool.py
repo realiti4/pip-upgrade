@@ -96,7 +96,10 @@ class PipUpgrade(DependenciesBase):
         if len(packages) > 0:
             # User input
             print(f'These packages will be upgraded: {list(packages.keys())}')
-            cont_upgrade = input('Continue? (y/n): ')
+            if self.args.yes:
+                cont_upgrade = 'y'
+            else:
+                cont_upgrade = input('Continue? (y/n): ')
             if cont_upgrade.lower() == 'y':
                 cont_upgrade = True
             elif cont_upgrade.lower() == 'n':
