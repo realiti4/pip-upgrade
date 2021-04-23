@@ -95,9 +95,9 @@ def main():
 
     pip_upgrade = PipUpgrade(args, config)
 
-    be_upgraded = pip_upgrade.get_dependencies()
+    pip_upgrade.get_dependencies()
 
-    pip_upgrade.upgrade(be_upgraded)
+    pip_upgrade.upgrade()
 
 if __name__ == "__main__":
     main()

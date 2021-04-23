@@ -1,5 +1,6 @@
 from pip._vendor import pkg_resources
 from pip_upgrade.version_checker import version_check, min_dependency, not_equal_check
+from pip_upgrade.store import Store
 
 """
     TODO 
@@ -13,82 +14,61 @@ class DependenciesBase:
         self.self_check = False
 
         self.packages = [dist.project_name for dist in pkg_resources.working_set]
-        # self.packages.remove('pip')
-
-        # self.packages = self.get_packages()
-        # self.packages.remove('pip')
+        self.be_upgraded = {}
+        self.wont_upgrade = {}
         
         self.dict = self.create_dict(self.packages)
         self.outdated = None
-
-        self.importance_list = ['==', '~=', '<', '<=', '>', '>=', '!=']    
     
-    def build_dep_matrix(self):
+    def create_dict(self, packages):
         """
-            - One hot encoding for every package and use numpy or use pandas' indexes if we can search by name
+            Creates a dict of Stores class for packages
         """
-        raise NotImplementedError 
+        return {x: Store(x) for x in packages}
 
     def get_dependencies(self):
         """
             The main func for getting dependencies and comparing them to output a final list
         """
 
-        self.retrieve_dependencies()
-
-        be_upgraded = {}
-        self.wont_upgrade = {}
+        self.retrieve_dependencies()        
 
         for pkg_dict in self.outdated:
             pkg_name = pkg_dict['name']
             current_version = pkg_dict['version']
             latest_version = pkg_dict['latest_version']
 
-            deps = self.dict[pkg_name]
+            pkg_store = self.dict[pkg_name]
+            pkg_store.current_version = current_version
+            pkg_store.latest_version = latest_version
 
-            apply_dep = self.compare_deps(pkg_name, deps, latest_version)
+            self.compare_deps(pkg_store)
 
-            be_upgraded[pkg_name] = apply_dep
-
-            # TODO Check if it can be upgraded
-            if len(apply_dep) > 0:
-                version_ = apply_dep[0][1]
-                sign_ = apply_dep[0][0]
-                if not version_check(apply_dep[0][1], latest_version, apply_dep[0][0]):
-                    self.wont_upgrade[pkg_name] = sign_ + version_
-
-        return be_upgraded
-
-    def compare_deps(self, pkg_name, deps, latest_version):
+    def compare_deps(self, pkg_store):
         """
             Compares dependencies in a list and decides what packages' final version should be
         """
-        store = []
-        store_nonequal = []
+        result = []
         done = False
-
-        # if not_equal_check(deps, latest_version):            
-            # return [('!=', latest_version)]
         
-        for i in self.importance_list:
-            for index, i_dep in enumerate(deps):
-                sign, version = i_dep
-
-                # for i in self.importance_list:
-                # if sign == '!=':
-                #     store.append(['<', latest_version])
-                if sign == i:
-                    store.append([sign, version])
+        for key in ['==', '~=', '<', '<=']:                
+            if len(pkg_store.data[key]) > 0:
+                result = [key, min(pkg_store.data[key])]
+                done = True
+                break
+        if not done:
+            for key in ['>', '>=']:
+                if len(pkg_store.data[key]) > 0:
+                    result = [key, max(pkg_store.data[key])]
                     done = True
-                    # return store
+                    break
+            #  Nonequal Check
+            for item in pkg_store.data['!=']:
+                not_equal_check(item, pkg_store.latest_version)
+                result = ['!=', pkg_store.latest_version]
 
-            if done:                
-                if len(store) > 1:
-                    # TODO check if taking min always is the right thing here
-                    return [min_dependency(store)]
-                else:
-                    return store
-        return store
+        if version_check(result, pkg_store.latest_version):
+            self.be_upgraded[pkg_store.name] = result
 
     def retrieve_dependencies(self):
         """
@@ -114,8 +94,8 @@ class DependenciesBase:
                                 name = key
                         try:                            
                             self.dict[name] += specs
-                        except:
+                        except Exception as e:
+                            # raise e
                             print(f'Skipping {name}, warning: Name mismatch. This will be improved. Manually upgrade if needed')
 
-    def create_dict(self, packages):
-        return {x: [] for x in packages}
+    
