@@ -1,3 +1,4 @@
+from copy import deepcopy
 from packaging import version
 
 
@@ -12,12 +13,27 @@ class Store:
 
         self.data = {'==': [], '~=': [], '<': [], '<=': [], '>': [], '>=': [], '!=': []}
 
-        # self.data = {
-        #     'less': {'sign': [], 'data': [], 'compare_func': min},
-        #     'greater': {'sign': [], 'data': [], 'compare_func': max},
-        #     'nonequal': {'sign': [], 'data': [], 'compare_func': None},
-        # }
         self.ready = False
+
+    def __iadd__(self, item):
+        self.add(item)
+        return self
+    
+    def __getitem__(self, key):
+        return self.data[key]
+
+    def __setitem__(self, key, item):
+        assert key in self.data, 'Item is not in keys'
+        self.data[key] = item
+
+    def __len__(self):
+        return sum([len(self.data[key]) for key in self.data])
+
+    def __repr__(self):
+        output = ''
+        for key in self.data:
+            output += key + ':\n' + '  ' + str(self.data[key]) + '\n'
+        return output
 
     def type_check(self, sign):
         """
@@ -33,10 +49,14 @@ class Store:
             group = 'nonequal'
             return None, group
 
-    def add(self, key, item):
-        print('de')
+    def add(self, item):
+        assert isinstance(item, list)
+        assert len(item[0]) == 2, 'It only accepts list of (sign, version)'
+        for sub_item in item:
+            sign_, version_ = sub_item
+            self.data[sign_].append(version_)
     
-    def add_(self, deps):
+    def add__(self, deps):
         """
             Adds value to store while applying min or max
         """
@@ -58,14 +78,19 @@ class Store:
         print('de')   
 
     def get(self):
-        if not self.ready:
+        """
+            Runs compare_ and gets final data. It has to be called after all adding is done.
+        """
+        if not self.ready:  # Disabled, always prepare the data for now
             self.prepare_()
+        return self.get_data
 
     def prepare_(self):
+        self.get_data = deepcopy(self.data)
         for key in ['==', '~=', '<', '<=']:
-            self.data[key] = [min(self.data[key])]
+            self.get_data[key] = [min(self.get_data[key])]
         for key in ['>', '>=']:
-            self.data[key] = [max(self.data[key])]
+            self.get_data[key] = [max(self.get_data[key])]
     
     def compare_(self):
         """
@@ -80,25 +105,5 @@ class Store:
                 index = data.index(func(data))
                 self.data[key]['sign'] = sign[index]
                 self.data[key]['data'] = data[index]
-        self.ready = True
-
-    def __iadd__(self, item):
-        assert isinstance(item, list)
-        assert len(item[0]) == 2, 'It only accepts list of (sign, version)'
-        for sub_item in item:
-            sign_, version_ = sub_item
-            self.data[sign_].append(version_)
-            # print(f'Debug: {sign_, version_} added..')
-        return self
+        # self.ready = True
     
-    def __getitem__(self, item):
-        if not self.ready:
-            self.compare_()
-        return [[self.data[item]['sign'], str(self.data[item]['data'])]]
-
-    # def __setitem__(self, key, item):
-    #     assert key in self.data, 'Item is not in keys'
-    #     self.data[key] = item
-
-    def __len__(self):
-        return sum([len(self.data[key]['data']) for key in self.data])
