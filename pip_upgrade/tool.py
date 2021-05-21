@@ -6,10 +6,6 @@ import subprocess
 
 from pip_upgrade.dependencies_base import DependenciesBase
 
-"""
-    TODO
-    - further testing is needed
-"""
 
 class PipUpgrade(DependenciesBase):
     def __init__(self, args, config):
