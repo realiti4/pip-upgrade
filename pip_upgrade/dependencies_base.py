@@ -89,7 +89,12 @@ class DependenciesBase:
                         try:                            
                             self.dict[name] += specs
                         except Exception as e:
-                            # raise e
-                            print(f'Skipping {name}, warning: Name mismatch. This will be improved. Manually upgrade if needed')
+                            if '_' in name:     # Fix for '_'
+                                name = name.replace('_', '-')
+                            try:
+                                self.dict[name] += specs
+                            except Exception as e:
+                                # raise e
+                                print(f'Skipping {name}, warning: Name mismatch. This will be improved. Manually upgrade if needed')
 
     
