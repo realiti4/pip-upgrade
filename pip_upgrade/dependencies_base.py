@@ -32,7 +32,14 @@ class DependenciesBase:
             current_version = pkg_dict['version']
             latest_version = pkg_dict['latest_version']
 
-            pkg_store = self.dict[pkg_name]
+            try:
+                pkg_store = self.dict[pkg_name]
+            except:
+                try:
+                    pkg_store = self.dict[pkg_name.lower()]
+                except Exception as e:
+                    raise e
+            
             pkg_store.current_version = current_version
             pkg_store.latest_version = latest_version
 
