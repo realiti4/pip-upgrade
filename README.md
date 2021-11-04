@@ -44,3 +44,4 @@ When `pip-upgrade` is run for the first time, it will create a file in the user'
 
 #### TODO / known issues
 - Feature - Update directly from Gohlke's packages
+- Feature - Revert to previous point
