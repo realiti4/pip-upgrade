@@ -1,7 +1,6 @@
 import os
 import sys
 import json
-from subprocess import call
 import subprocess
 
 from pip_upgrade.dependencies_base import DependenciesBase
@@ -68,14 +67,6 @@ class PipUpgrade(DependenciesBase):
 
     # Upgrade
 
-    def _help(self):
-        print("")
-        print("y:  Continue")
-        print("n:  Abort")
-        print("-e: Exclude packages you don't want to upgrade")
-        print("r:  Repeat previous exclouded pkgs")
-        print("")
-
     def clear_list(self, main, subtract, check_input_error=False):
         """
             Removes subtract's elements from main
@@ -90,12 +81,14 @@ class PipUpgrade(DependenciesBase):
 
     def user_prompt(self, packages):
         if self.args.yes:
-            cont_upgrade = 'y'
+            cont_upgrade = True
         else:
             cont_upgrade = input('Continue? (y/n or -e/r/help): ')
 
         if cont_upgrade.lower() == 'y':
             cont_upgrade = True
+            self.config['restore']['last_exclude'] = ""
+            self.config._save()
         elif cont_upgrade.lower() == 'n':
             cont_upgrade = False
         elif cont_upgrade.startswith('-e'):
@@ -154,3 +147,11 @@ class PipUpgrade(DependenciesBase):
 
         if self.self_check:
             print("A new update avaliable for pip-upgrade-tool.\nPlease manually upgrade the tool using 'python -m pip install -U pip-upgrade-tool'")
+
+    def _help(self):
+        print("")
+        print("y:  Continue")
+        print("n:  Abort")
+        print("-e: Exclude packages you don't want to upgrade")
+        print("r:  Repeat previous exclouded pkgs")
+        print("")
