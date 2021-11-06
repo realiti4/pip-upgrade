@@ -60,9 +60,10 @@ class Config(configparser.ConfigParser):
         if input("Are you sure you want to completely reset the config file? (y/n): ") == 'y':
             if os.path.isfile(os.path.join(self.home, self.name)):
                 os.remove(os.path.join(self.home, self.name))
+                self.config = configparser.ConfigParser()
+                self._init()
         else:
             print('Aborted, not resetting config.')
-        self._init()
     
     def __getitem__(self, key):
         return self.config[key]

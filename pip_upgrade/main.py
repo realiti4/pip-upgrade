@@ -58,6 +58,7 @@ def main():
 
     if args.reset_config:
         config._reset()
+        sys.exit()
 
     check_venv(config)
 
