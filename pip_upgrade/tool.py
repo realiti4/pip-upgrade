@@ -3,7 +3,6 @@ import sys
 import json
 import subprocess
 
-# from termcolor import colored, cprint
 from pip_upgrade.dependencies_base import DependenciesBase
 
 
@@ -12,6 +11,7 @@ class PipUpgrade(DependenciesBase):
         super(PipUpgrade, self).__init__()
         self.args = args
         self.config = config
+        self.colored = '\033[32m' if config['conf']['disable_colors'] == 'false' else '\033[m'
         self.restorable = False
         if 'restore' in config.config:
             if len(config['restore']['last_exclude']) != 0:
@@ -129,8 +129,8 @@ class PipUpgrade(DependenciesBase):
 
         if len(packages) > 0:
             # Info
-            print(f'These packages will be upgraded: {list(packages.keys())}')
-            # print(f"{colored('These packages will be upgraded: ', 'green')}{list(packages.keys())}")
+            print(f"{self.colored}These packages will be upgraded: \033[m{list(packages.keys())}")
+            # print(f'These packages will be upgraded: {list(packages.keys())}')
             if self.restorable:
                 restore = self.config['restore']['last_exclude']
                 print(f'(-r, --repeat  :  -e {restore})')

@@ -34,6 +34,7 @@ class Config(configparser.ConfigParser):
             self.config['conf']['exclude'] = ''
             self.config['conf']['novenv'] = 'false'
             self.config['conf']['max_cache'] = 'false'
+            self.config['conf']['disable_colors'] = 'false'
             # Restore
             self.config.add_section('restore')
             self.config['restore']['last_exclude'] = ''
