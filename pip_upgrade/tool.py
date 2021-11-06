@@ -12,6 +12,10 @@ class PipUpgrade(DependenciesBase):
         super(PipUpgrade, self).__init__()
         self.args = args
         self.config = config
+        self.restorable = False
+        if 'restore' in config.config:
+            if len(config['restore']['last_exclude']) != 0:
+                self.restorable = True
 
         # Exclude editable and user defined packages
         self.excluded_pkgs = [] if self.args.exclude is None else self.args.exclude
@@ -76,6 +80,9 @@ class PipUpgrade(DependenciesBase):
                     raise Exception(f'{item} is not in upgradable packages. This error is for safety incase of typos')
         return main
 
+    def user_promt(self):
+        pass
+    
     def upgrade(self):
         be_upgraded = self.be_upgraded
         packages = {}
@@ -91,19 +98,35 @@ class PipUpgrade(DependenciesBase):
         if len(packages) > 0:
             # User input
             print(f'These packages will be upgraded: {list(packages.keys())}')
+            if self.restorable:
+                restore = self.config['restore']['last_exclude']
+                # print(f'Last packages excluded: {restore}')
             if self.args.yes:
                 cont_upgrade = 'y'
             else:
-                cont_upgrade = input('Continue? (y/n): ')
+                cont_upgrade = input('Continue? (y/n or -e/r/help): ')
             if cont_upgrade.lower() == 'y':
                 cont_upgrade = True
             elif cont_upgrade.lower() == 'n':
                 cont_upgrade = False
-            elif cont_upgrade.startswith('-e'): # TODO take exclude arg here, test this further
+            elif cont_upgrade.startswith('-e'):
                 exclude = cont_upgrade.split(" ")
                 exclude.remove('-e')
                 self.clear_list(packages, exclude, check_input_error=True)
                 cont_upgrade = True if len(packages) > 0 else False
+                self.config['restore']['last_exclude'] = " ".join(str(x) for x in exclude)
+                self.config._save()
+            elif cont_upgrade.lower() == 'r':
+                assert self.restorable
+                repeat = self.config['restore']['last_exclude']
+                # print(f'Repeat previous setting? -e {repeat}')
+                # if input('(y/n): ').lower() == 'y':
+                if input(f'Repeat previous setting? -e {repeat} (y/n): ').lower() == 'y':
+                    exclude = repeat.split(" ")
+                    self.clear_list(packages, exclude, check_input_error=True)
+                    cont_upgrade = True if len(packages) > 0 else False
+                else:
+                    cont_upgrade = False
             else:
                 print('Please use one of the accepted inputs (y/n or -e PackageNames)\nCanceling...')
                 cont_upgrade = False

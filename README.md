@@ -34,7 +34,7 @@ You can also exclude packages beforehand. Use `-e` or `--exclude`. The tool won'
 ### Options
 - `pip-upgrade -e` Exclude packages you don't want to upgrade. Can take multiple or single value.
 - `pip-upgrade -y` Accept all upgrades and skip user prompt.
-- `pip-upgrade --clear` Clear pip's cache.
+- `pip-upgrade --clean` Clear pip's cache.
 - `pip-upgrade --local`	By default locally installed editable packages (installed with `pip install . -e`) won't be upgraded. Use this option to upgrade everything.
 - `pip-upgrade --novenv` By default the tool won't work if virtualenv is not active. Use this if you want use it globally and pass the assertion error.
 - `pip-upgrade --reset-config` Reset config file located in `~/.pipupgrade.ini` to it's default.
