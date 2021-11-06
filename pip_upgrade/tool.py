@@ -1,7 +1,6 @@
 import os
 import sys
 import json
-from subprocess import call
 import subprocess
 
 from pip_upgrade.dependencies_base import DependenciesBase
@@ -12,6 +11,11 @@ class PipUpgrade(DependenciesBase):
         super(PipUpgrade, self).__init__()
         self.args = args
         self.config = config
+        self.colored = '\033[32m' if config['conf']['disable_colors'] == 'false' else '\033[m'
+        self.restorable = False
+        if 'restore' in config.config:
+            if len(config['restore']['last_exclude']) != 0:
+                self.restorable = True
 
         # Exclude editable and user defined packages
         self.excluded_pkgs = [] if self.args.exclude is None else self.args.exclude
@@ -76,6 +80,44 @@ class PipUpgrade(DependenciesBase):
                     raise Exception(f'{item} is not in upgradable packages. This error is for safety incase of typos')
         return main
 
+    def user_prompt(self, packages):
+        if self.args.yes:
+            cont_upgrade = True
+        else:
+            cont_upgrade = input('Continue? (y/n or -e/-r/--help): ')
+
+        if cont_upgrade.lower() == 'y':
+            cont_upgrade = True
+            self.config['restore']['last_exclude'] = ""
+            self.config._save()
+        elif cont_upgrade.lower() == 'n':
+            cont_upgrade = False
+        elif cont_upgrade.startswith('-e'):
+            exclude = cont_upgrade.split(" ")
+            exclude.remove('-e')
+            self.clear_list(packages, exclude, check_input_error=True)
+            cont_upgrade = True if len(packages) > 0 else False
+            self.config['restore']['last_exclude'] = " ".join(str(x) for x in exclude)
+            self.config._save()
+        elif cont_upgrade.lower() == '-r' or cont_upgrade.lower() == '--repeat':
+            if self.restorable:
+                repeat = self.config['restore']['last_exclude']
+                
+                exclude = repeat.split(" ")
+                self.clear_list(packages, exclude, check_input_error=True)
+                cont_upgrade = True if len(packages) > 0 else False
+            else:
+                print('No previous setting to repeat...')
+                cont_upgrade = self.user_prompt(packages)
+        elif cont_upgrade.lower() == '-h' or cont_upgrade.lower() == '--help':
+            self._help()
+            cont_upgrade = self.user_prompt(packages)
+        else:
+            print('Please use one of the accepted inputs (y/n or -e PackageNames)\nCanceling...')
+            cont_upgrade = False
+
+        return cont_upgrade
+    
     def upgrade(self):
         be_upgraded = self.be_upgraded
         packages = {}
@@ -89,24 +131,15 @@ class PipUpgrade(DependenciesBase):
         packages = self.clear_list(packages, self.wont_upgrade)
 
         if len(packages) > 0:
+            # Info
+            print(f"{self.colored}These packages will be upgraded: \033[m{list(packages.keys())}")
+            # print(f'These packages will be upgraded: {list(packages.keys())}')
+            if self.restorable:
+                restore = self.config['restore']['last_exclude']
+                print(f'(-r, --repeat  :  -e {restore})')
+            
             # User input
-            print(f'These packages will be upgraded: {list(packages.keys())}')
-            if self.args.yes:
-                cont_upgrade = 'y'
-            else:
-                cont_upgrade = input('Continue? (y/n): ')
-            if cont_upgrade.lower() == 'y':
-                cont_upgrade = True
-            elif cont_upgrade.lower() == 'n':
-                cont_upgrade = False
-            elif cont_upgrade.startswith('-e'): # TODO take exclude arg here, test this further
-                exclude = cont_upgrade.split(" ")
-                exclude.remove('-e')
-                self.clear_list(packages, exclude, check_input_error=True)
-                cont_upgrade = True if len(packages) > 0 else False
-            else:
-                print('Please use one of the accepted inputs (y/n or -e PackageNames)\nCanceling...')
-                cont_upgrade = False
+            cont_upgrade = self.user_prompt(packages)
 
             # Prepare packages dict
             packages = list(packages.items())
@@ -119,3 +152,11 @@ class PipUpgrade(DependenciesBase):
 
         if self.self_check:
             print("A new update avaliable for pip-upgrade-tool.\nPlease manually upgrade the tool using 'python -m pip install -U pip-upgrade-tool'")
+
+    def _help(self):
+        print("")
+        print("y              :  Continue")
+        print("n              :  Abort")
+        print("-e, --exclude  :  Exclude packages and continue. Example: -e pytest hypothesis")
+        print("-r, --repeat   :  Repeat previous excluded pkgs")
+        print("")

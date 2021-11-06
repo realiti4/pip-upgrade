@@ -2,58 +2,24 @@ import sys
 import subprocess
 import shutil
 import argparse
-import configparser
-import os
 
+from pathlib import Path
 from pip_upgrade.tool import PipUpgrade
+from pip_upgrade.utils.config import Config
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-e', '--exclude', nargs='+', help="Exclude packages you don't want to upgrade")
 parser.add_argument('--local', action='store_true', help="Upgrades local packages as well")
 parser.add_argument('--novenv', action='store_true', help="Disables venv check")
-parser.add_argument('--clear', action='store_true', help="Clears pip's cache")
+parser.add_argument('--clear', action='store_true', help="Clears pip's cache")  # Deprecated
+parser.add_argument('--clean', action='store_true', help="Clears pip's cache")
 parser.add_argument('-y', '--yes', action='store_true', help="Accept all upgrades and skip user prompt")
 parser.add_argument('--reset-config', action='store_true', help='Reset config file to default')
 parser.add_argument('-q', '--query', help="Query package dependency info from pypi")
 
 args = parser.parse_args()
 
-def get_config():
-    """
-        Make config if it doesn't already exist and read it into the `config` variable. Then ensure config validity
-    """
-    home = os.path.expanduser("~")
-    config = configparser.ConfigParser()
-    if not os.path.isfile(os.path.join(home, ".pipupgrade.ini")):
-        config.add_section('conf')
-        config['conf']['exclude'] = ''
-        config['conf']['novenv'] = 'false'
-        with open(os.path.join(home, '.pipupgrade.ini'), 'w') as f:
-            config.write(f)
-    else:
-        config.read(os.path.join(home, '.pipupgrade.ini'))
 
-    # Check config validity
-    if not config.has_section('conf'):
-        print("Invalid config (no `conf` section), config will be ignored.")
-        config.add_section('conf')
-        config['conf']['novenv'] = 'false'
-        config['conf']['exclude'] = ''
-    if not config.has_option('conf', 'novenv'):
-        config['conf']['novenv'] = 'false'
-    if not config.has_option('conf', 'exclude'):
-        config['conf']['exclude'] = ''
-
-    return config
-
-def reset_config():
-    if input("Are you sure you want to completely reset the config file? (y/n): ") == 'y':
-        home = os.path.expanduser("~")
-        if os.path.isfile(os.path.join(home, '.pipupgrade.ini')):
-            os.remove(os.path.join(home, '.pipupgrade.ini'))
-    else:
-        print('Aborted, not resetting config.')
-    return get_config()
 
 def check_venv(config):
     """
@@ -70,7 +36,12 @@ def clear_cache():
     output = subprocess.check_output(arg_list)
     output = output.decode("utf-8").replace("\n", "").replace("\r", "")
 
-    print(f'Folder will be deleted: {output}')
+    # Dev - print folder size
+    dev_path = Path(output)
+    cache_size = sum(f.stat().st_size for f in dev_path.glob('**/*') if f.is_file())
+    cache_size = int((cache_size / 1024) / 1024)
+
+    print(f'Folder will be deleted: {output}  Size: {cache_size}MB')
     confirm = input('Continue? (y/n): ')
 
     if confirm.lower() == 'y':
@@ -83,14 +54,15 @@ def clear_cache():
         print('Aborted, if the folder was wrong, please fill an issue.')
 
 def main():
-    config = get_config()
+    config = Config()
 
     if args.reset_config:
-        config = reset_config()
+        config._reset()
+        sys.exit()
 
     check_venv(config)
 
-    if args.clear:
+    if args.clear or args.clean:
         return clear_cache()
 
     pip_upgrade = PipUpgrade(args, config)
