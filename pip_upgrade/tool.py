@@ -3,6 +3,7 @@ import sys
 import json
 import subprocess
 
+# from termcolor import colored, cprint
 from pip_upgrade.dependencies_base import DependenciesBase
 
 
@@ -83,7 +84,7 @@ class PipUpgrade(DependenciesBase):
         if self.args.yes:
             cont_upgrade = True
         else:
-            cont_upgrade = input('Continue? (y/n or -e/r/help): ')
+            cont_upgrade = input('Continue? (y/n or -e/-r/--help): ')
 
         if cont_upgrade.lower() == 'y':
             cont_upgrade = True
@@ -98,14 +99,14 @@ class PipUpgrade(DependenciesBase):
             cont_upgrade = True if len(packages) > 0 else False
             self.config['restore']['last_exclude'] = " ".join(str(x) for x in exclude)
             self.config._save()
-        elif cont_upgrade.lower() == 'r':
+        elif cont_upgrade.lower() == '-r' or cont_upgrade.lower() == '--repeat':
             assert self.restorable
             repeat = self.config['restore']['last_exclude']
             
             exclude = repeat.split(" ")
             self.clear_list(packages, exclude, check_input_error=True)
             cont_upgrade = True if len(packages) > 0 else False
-        elif cont_upgrade.lower() == 'help':
+        elif cont_upgrade.lower() == '-h' or cont_upgrade.lower() == '--help':
             self._help()
             cont_upgrade = self.user_prompt(packages)
         else:
@@ -129,9 +130,10 @@ class PipUpgrade(DependenciesBase):
         if len(packages) > 0:
             # Info
             print(f'These packages will be upgraded: {list(packages.keys())}')
+            # print(f"{colored('These packages will be upgraded: ', 'green')}{list(packages.keys())}")
             if self.restorable:
                 restore = self.config['restore']['last_exclude']
-                print(f'Previously excluded pkgs (r): {restore}')
+                print(f'(-r, --repeat  :  -e {restore})')
             
             # User input
             cont_upgrade = self.user_prompt(packages)
@@ -150,8 +152,8 @@ class PipUpgrade(DependenciesBase):
 
     def _help(self):
         print("")
-        print("y:  Continue")
-        print("n:  Abort")
-        print("-e: Exclude packages you don't want to upgrade")
-        print("r:  Repeat previous exclouded pkgs")
+        print("y              :  Continue")
+        print("n              :  Abort")
+        print("-e, --exclude  :  Exclude packages and continue. Example: -e pytest hypothesis")
+        print("-r, --repeat   :  Repeat previous excluded pkgs")
         print("")
