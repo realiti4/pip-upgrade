@@ -82,7 +82,7 @@ class PipUpgrade(DependenciesBase):
 
     def user_prompt(self, packages):
         if self.args.yes:
-            cont_upgrade = True
+            cont_upgrade = 'y'
         else:
             cont_upgrade = input('Continue? (y/n or -e/-r/--help): ')
 
