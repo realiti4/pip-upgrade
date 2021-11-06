@@ -100,12 +100,15 @@ class PipUpgrade(DependenciesBase):
             self.config['restore']['last_exclude'] = " ".join(str(x) for x in exclude)
             self.config._save()
         elif cont_upgrade.lower() == '-r' or cont_upgrade.lower() == '--repeat':
-            assert self.restorable
-            repeat = self.config['restore']['last_exclude']
-            
-            exclude = repeat.split(" ")
-            self.clear_list(packages, exclude, check_input_error=True)
-            cont_upgrade = True if len(packages) > 0 else False
+            if self.restorable:
+                repeat = self.config['restore']['last_exclude']
+                
+                exclude = repeat.split(" ")
+                self.clear_list(packages, exclude, check_input_error=True)
+                cont_upgrade = True if len(packages) > 0 else False
+            else:
+                print('No previous setting to repeat...')
+                cont_upgrade = self.user_prompt(packages)
         elif cont_upgrade.lower() == '-h' or cont_upgrade.lower() == '--help':
             self._help()
             cont_upgrade = self.user_prompt(packages)
