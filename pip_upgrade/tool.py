@@ -100,7 +100,7 @@ class PipUpgrade(DependenciesBase):
             print(f'These packages will be upgraded: {list(packages.keys())}')
             if self.restorable:
                 restore = self.config['restore']['last_exclude']
-                # print(f'Last packages excluded: {restore}')
+                print(f'Previously excluded pkgs (r): {restore}')
             if self.args.yes:
                 cont_upgrade = 'y'
             else:
@@ -119,14 +119,12 @@ class PipUpgrade(DependenciesBase):
             elif cont_upgrade.lower() == 'r':
                 assert self.restorable
                 repeat = self.config['restore']['last_exclude']
-                # print(f'Repeat previous setting? -e {repeat}')
-                # if input('(y/n): ').lower() == 'y':
-                if input(f'Repeat previous setting? -e {repeat} (y/n): ').lower() == 'y':
-                    exclude = repeat.split(" ")
-                    self.clear_list(packages, exclude, check_input_error=True)
-                    cont_upgrade = True if len(packages) > 0 else False
-                else:
-                    cont_upgrade = False
+                
+                exclude = repeat.split(" ")
+                self.clear_list(packages, exclude, check_input_error=True)
+                cont_upgrade = True if len(packages) > 0 else False
+            elif cont_upgrade.lower() == 'help':
+                raise NotImplementedError
             else:
                 print('Please use one of the accepted inputs (y/n or -e PackageNames)\nCanceling...')
                 cont_upgrade = False
