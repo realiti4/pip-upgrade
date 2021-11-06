@@ -1,5 +1,6 @@
 import configparser
 import os
+import copy
 
 
 class Config(configparser.ConfigParser):
@@ -8,17 +9,8 @@ class Config(configparser.ConfigParser):
         self.name = '.pipupgrade.ini'
         self.config = configparser.ConfigParser()
 
-        self.defaults = {
-            'conf': {
-                'exclude': '',
-                'noenv': 'false',
-            },
-            'restore': {}
-        }
-
         self._init()
         self._check_validity()
-        # self._save()
 
     def _save(self):
         with open(os.path.join(self.home, self.name), 'w') as f:
@@ -45,7 +37,7 @@ class Config(configparser.ConfigParser):
 
     def _check_validity(self):
         # Check config validity
-        check_edited = self.config
+        check_changes = copy.deepcopy(self.config)
         # Conf
         if not self.config.has_section('conf'):
             print("Invalid config (no `conf` section), config will be ignored.")
@@ -66,6 +58,9 @@ class Config(configparser.ConfigParser):
             self.config['restore']['last_exclude'] = ''
         if not self.config.has_option('conf', 'novenv'):
             self.config['restore']['last_exclude'] = ''
+
+        if not check_changes == self.config:
+            self._save()
 
     def _reset(self):
         if input("Are you sure you want to completely reset the config file? (y/n): ") == 'y':
