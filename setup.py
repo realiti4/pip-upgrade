@@ -21,6 +21,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    packages=["pip_upgrade"],
+    packages=["pip_upgrade", "pip_upgrade.utils"],
     install_requires=["packaging"],
 )
