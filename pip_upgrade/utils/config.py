@@ -17,6 +17,8 @@ class Config(configparser.ConfigParser):
         }
 
         self._init()
+        self._check_validity()
+        # self._save()
 
     def _save(self):
         with open(os.path.join(self.home, self.name), 'w') as f:
@@ -24,8 +26,6 @@ class Config(configparser.ConfigParser):
 
     def _read(self):
         self.config.read(os.path.join(self.home, self.name))
-        if not self._check_validity:
-            print('something')  # do something
     
     def _init(self):
         if not os.path.isfile(os.path.join(self.home, self.name)):
@@ -45,7 +45,8 @@ class Config(configparser.ConfigParser):
 
     def _check_validity(self):
         # Check config validity
-        # TODO Check missing keys efficiently
+        check_edited = self.config
+        # Conf
         if not self.config.has_section('conf'):
             print("Invalid config (no `conf` section), config will be ignored.")
             self.config.add_section('conf')
@@ -55,6 +56,16 @@ class Config(configparser.ConfigParser):
             self.config['conf']['novenv'] = 'false'
         if not self.config.has_option('conf', 'exclude'):
             self.config['conf']['exclude'] = ''
+        if not self.config.has_option('conf', 'max_cache'):
+            self.config['conf']['max_cache'] = 'false'
+        if not self.config.has_option('conf', 'disable_colors'):
+            self.config['conf']['disable_colors'] = 'false'
+        # Restore
+        if not self.config.has_section('restore'):
+            self.config.add_section('restore')
+            self.config['restore']['last_exclude'] = ''
+        if not self.config.has_option('conf', 'novenv'):
+            self.config['restore']['last_exclude'] = ''
 
     def _reset(self):
         if input("Are you sure you want to completely reset the config file? (y/n): ") == 'y':
