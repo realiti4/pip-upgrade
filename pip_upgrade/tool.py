@@ -4,6 +4,7 @@ import json
 import subprocess
 
 from pip_upgrade.dependencies_base import DependenciesBase
+from pip_upgrade.tools import cprint
 
 
 class PipUpgrade(DependenciesBase):
@@ -132,8 +133,7 @@ class PipUpgrade(DependenciesBase):
 
         if len(packages) > 0:
             # Info
-            print(f"{self.colored}These packages will be upgraded: \033[m{list(packages.keys())}")
-            # print(f'These packages will be upgraded: {list(packages.keys())}')
+            cprint('These packages will be upgraded: ', list(packages.keys()), color='green')
             if self.restorable:
                 restore = self.config['restore']['last_exclude']
                 print(f'(-r, --repeat  :  -e {restore})')
@@ -145,13 +145,14 @@ class PipUpgrade(DependenciesBase):
             packages = list(packages.items())
             packages = [''.join(x) for x in packages]
 
-            if cont_upgrade:
+            if cont_upgrade and not self.args.dev:
                 subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', *packages])
 
         print('All packages are up to date! 🎉')
 
         if self.self_check:
             print("A new update avaliable for pip-upgrade-tool.\nPlease manually upgrade the tool using 'python -m pip install -U pip-upgrade-tool'")
+            # cprint("A new update avaliable for pip-upgrade-tool.\nPlease manually upgrade the tool using 'python -m pip install -U pip-upgrade-tool'", color='yellow')
 
     def _help(self):
         print("")

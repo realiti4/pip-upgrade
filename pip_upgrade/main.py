@@ -5,7 +5,7 @@ import argparse
 
 from pathlib import Path
 from pip_upgrade.tool import PipUpgrade
-from pip_upgrade.utils.config import Config
+from pip_upgrade.tools import Config
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-e', '--exclude', nargs='+', help="Exclude packages you don't want to upgrade")
@@ -15,6 +15,7 @@ parser.add_argument('--clear', action='store_true', help="Clears pip's cache")  
 parser.add_argument('--clean', action='store_true', help="Clears pip's cache")
 parser.add_argument('-y', '--yes', action='store_true', help="Accept all upgrades and skip user prompt")
 parser.add_argument('--reset-config', action='store_true', help='Reset config file to default')
+parser.add_argument('--dev', action='store_true', help="Doesn't actually call upgrade at the end")
 parser.add_argument('-q', '--query', help="Query package dependency info from pypi")
 
 args = parser.parse_args()
@@ -53,8 +54,12 @@ def clear_cache():
     else:
         print('Aborted, if the folder was wrong, please fill an issue.')
 
-def main():
+def main(dev=False):
     config = Config()
+
+    if dev:
+        print('Developer Mode')
+        args.dev = True
 
     if args.reset_config:
         config._reset()
@@ -72,4 +77,4 @@ def main():
     pip_upgrade.upgrade()
 
 if __name__ == "__main__":
-    main()
+    main(dev=False)
