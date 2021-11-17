@@ -22,10 +22,11 @@ Continue? (y/n): y
 All packages are up to date! 🎉
 ```
 
-**Tip:** You can use `-e` to exclude packages in `Continue? (y/n):` after seeing which packages are going to be upgraded. This is super useful for packages like gohlke's Numpy+mkl for example.
+**Tip:** You can use `-e` to exclude packages in `Continue? (y/n):` after seeing which packages are going to be upgraded. This is super useful for packages like gohlke's Numpy+mkl for example. `-r` to repeat the previous excluded packages. It'll show if there is a saved repeatable action.
 ```
 These packages will be upgraded: ['hypothesis', 'Pillow', 'pytest', 'setuptools']
-Continue? (y/n): -e pytest hypothesis
+(-r, --repeat  :  -e pytest)
+Continue? (y/n or -e/-r/--help): -e pytest hypothesis
 ```
 
 You can also exclude packages beforehand. Use `-e` or `--exclude`. The tool won't upgrade dependency breaking packages already, this is extra for packages that you want to keep it at a version.
