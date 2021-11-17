@@ -29,7 +29,7 @@ These packages will be upgraded: ['hypothesis', 'Pillow', 'pytest', 'setuptools'
 Continue? (y/n or -e/-r/--help): -e pytest hypothesis
 ```
 
-You can also exclude packages beforehand. Use `-e` or `--exclude`. The tool won't upgrade dependency breaking packages already, this is extra for packages that you want to keep it at a version.
+You can also exclude packages beforehand. Use `-e` or `--exclude`. The tool won't upgrade dependency breaking packages already, this is extra for packages that you want to keep it at a version. You can also add packages to config file for this to persist until you remove. This combined with `pip-upgrade -y` that accepts and skips user prompt can be used for automated environments.
 
     $ pip-upgrade -e numpy pandas
 ### Options
