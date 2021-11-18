@@ -22,7 +22,7 @@ Continue? (y/n): y
 All packages are up to date! 🎉
 ```
 
-**Tip:** You can use `-e` to exclude packages in `Continue? (y/n):` after seeing which packages are going to be upgraded. This is super useful for packages like gohlke's Numpy+mkl for example. `-r` to repeat the previous excluded packages. It'll show if there is a saved repeatable action.
+**Tip:** You can use `-e` to exclude some packages and continue in `Continue? (y/n):` after seeing which packages are going to be upgraded. This is super useful for packages like gohlke's Numpy+mkl for example. `-r` to repeat the previous excluded packages. It'll show if there is a saved repeatable action.
 ```
 These packages will be upgraded: ['hypothesis', 'Pillow', 'pytest', 'setuptools']
 (-r, --repeat  :  -e pytest)
@@ -36,7 +36,7 @@ You can also exclude packages beforehand. Use `-e` or `--exclude`. The tool won'
 - `pip-upgrade -e` Exclude packages you don't want to upgrade. Can take multiple or single value.
 - `pip-upgrade -y` Accept all upgrades and skip user prompt.
 - `pip-upgrade --clean` Clear pip's cache.
-- `pip-upgrade --local`	By default locally installed editable packages (installed with `pip install . -e`) won't be upgraded. Use this option to upgrade everything.
+- `pip-upgrade --local`	By default locally installed editable packages (installed with `pip install -e .`) won't be upgraded. Use this option to upgrade everything.
 - `pip-upgrade --novenv` By default the tool won't work if virtualenv is not active. Use this if you want use it globally and pass the assertion error.
 - `pip-upgrade --reset-config` Reset config file located in `~/.pipupgrade.ini` to it's default.
 
