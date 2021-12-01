@@ -38,7 +38,12 @@ class DependenciesBase:
                 try:
                     pkg_store = self.dict[pkg_name.lower()]
                 except Exception as e:
-                    raise e
+                    if '_' in pkg_name:     # Fix for '_'
+                        pkg_name = pkg_name.replace('_', '-')
+                    try:
+                        pkg_store = self.dict[pkg_name]
+                    except Exception as e:
+                        raise e
             
             pkg_store.current_version = current_version
             pkg_store.latest_version = latest_version
@@ -104,4 +109,8 @@ class DependenciesBase:
                                 # raise e
                                 print(f'Skipping {name}, warning: Name mismatch. This will be improved. Manually upgrade if needed')
 
-    
+    def check_name_in_dict(self):
+        """
+            Case and '_', '-' checks. Returns the true name on dict
+        """
+        return
