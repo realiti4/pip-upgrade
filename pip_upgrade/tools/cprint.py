@@ -9,7 +9,7 @@ class ColoredPrint():
             'yellow': 'notimplemented',
             'default': '\033[m'
         }
-        if self.terminal_check:
+        if self.terminal_check():
             self.enabled = False
 
     def terminal_check(self):
