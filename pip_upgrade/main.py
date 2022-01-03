@@ -1,12 +1,9 @@
 import sys
-import subprocess
-import shutil
 import argparse
 import logging
 
-from pathlib import Path
 from pip_upgrade.tool import PipUpgrade
-from pip_upgrade.tools import Config, cprint
+from pip_upgrade.tools import Config, cprint, clear_cache
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-e', '--exclude', nargs='+', help="Exclude packages you don't want to upgrade")
@@ -29,31 +26,6 @@ def check_venv(config):
     """
     if not args.novenv and config['conf']['novenv'] == 'false':
         assert not sys.prefix == sys.base_prefix, 'Please use pip-upgrade in a virtualenv. If you would like to surpass this use pip-upgrade --novenv'
-
-def clear_cache():
-    """
-        Clears pip cache
-    """
-    arg_list = [sys.executable, '-m', 'pip', 'cache', 'dir']
-    output = subprocess.check_output(arg_list)
-    output = output.decode("utf-8").replace("\n", "").replace("\r", "")
-
-    # Dev - print folder size
-    dev_path = Path(output)
-    cache_size = sum(f.stat().st_size for f in dev_path.glob('**/*') if f.is_file())
-    cache_size = int((cache_size / 1024) / 1024)
-
-    print(f'Folder will be deleted: {output}  Size: {cache_size}MB')
-    confirm = input('Continue? (y/n): ')
-
-    if confirm.lower() == 'y':
-        try:
-            shutil.rmtree(output)
-            print('Cache is cleared..')
-        except Exception as e:
-            print(e)
-    else:
-        print('Aborted, if the folder was wrong, please fill an issue.')
 
 def main(dev=False):
     config = Config()
