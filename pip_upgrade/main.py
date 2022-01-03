@@ -2,10 +2,11 @@ import sys
 import subprocess
 import shutil
 import argparse
+import logging
 
 from pathlib import Path
 from pip_upgrade.tool import PipUpgrade
-from pip_upgrade.tools import Config
+from pip_upgrade.tools import Config, cprint
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-e', '--exclude', nargs='+', help="Exclude packages you don't want to upgrade")
@@ -74,7 +75,15 @@ def main(dev=False):
 
     pip_upgrade.get_dependencies()
 
-    pip_upgrade.upgrade()
+    try:
+        pip_upgrade.upgrade()
+    except BaseException:
+        logging.exception("An exception was thrown!")
+        
+        # Print upgrade info if there available upgrades after an exception
+        if pip_upgrade.self_check:
+            cprint("\nThere is an upgrade for pip-upgrade-tool!", color='green')
+            cprint("Please first manually upgrade the tool using 'python -m pip install -U pip-upgrade-tool'\nIf this doesn't fix your issue, please consider opening an issue at https://github.com/realiti4/pip-upgrade", disabled=True)
 
 if __name__ == "__main__":
     main(dev=False)

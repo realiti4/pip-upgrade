@@ -24,6 +24,7 @@ class PipUpgrade(DependenciesBase):
         if not self.args.local:     # Exclude editable packages
             self.excluded_pkgs = self.get_packages(args=['--editable']) + self.excluded_pkgs
 
+        self.self_check = False
         self.outdated = self.check_outdated()
 
     # Packages info
