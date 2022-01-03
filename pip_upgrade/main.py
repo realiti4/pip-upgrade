@@ -73,9 +73,8 @@ def main(dev=False):
 
     pip_upgrade = PipUpgrade(args, config)
 
-    pip_upgrade.get_dependencies()
-
     try:
+        pip_upgrade.get_dependencies()
         pip_upgrade.upgrade()
     except BaseException:
         logging.exception("An exception was thrown!")
