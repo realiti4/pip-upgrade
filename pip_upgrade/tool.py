@@ -105,7 +105,7 @@ class PipUpgrade(DependenciesBase):
                 repeat = self.config['restore']['last_exclude']
                 
                 exclude = repeat.split(" ")
-                self.clear_list(packages, exclude, check_input_error=True)
+                self.clear_list(packages, exclude, check_input_error=False)
                 cont_upgrade = True if len(packages) > 0 else False
             else:
                 print('No previous setting to repeat...')

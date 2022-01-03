@@ -9,12 +9,12 @@ class ColoredPrint():
             'yellow': 'notimplemented',
             'default': '\033[m'
         }
-        if not self.terminal_check:
+        if self.terminal_check:
             self.enabled = False
 
     def terminal_check(self):
         """Don't print colored if it is cmd"""
-        return True
+        return (os.getenv('PROMPT', '') == '$P$G')
 
     def __call__(self, *input, color='green', disabled=False):
         if disabled or not self.enabled:
