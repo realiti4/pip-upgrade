@@ -8,6 +8,7 @@ class Config(configparser.ConfigParser):
         self.home = os.path.expanduser('~')
         self.name = '.pipupgrade.ini'
         self.config = configparser.ConfigParser()
+        self.first_run = True
 
         self._init()
         self._check_validity()
@@ -33,6 +34,7 @@ class Config(configparser.ConfigParser):
             # Save
             self._save()
         else:
+            self.first_run = False
             self._read()
 
     def _check_validity(self):

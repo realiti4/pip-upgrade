@@ -18,6 +18,10 @@ class PipUpgrade(DependenciesBase):
             if len(config['restore']['last_exclude']) != 0:
                 self.restorable = True
 
+        # Upgrade if it is first run
+        if config.first_run:
+            self._upgrade_pip()
+
         # Exclude editable and user defined packages
         self.excluded_pkgs = [] if self.args.exclude is None else self.args.exclude
         self.excluded_pkgs += self.config['conf']['exclude'].split(' ')
@@ -155,6 +159,10 @@ class PipUpgrade(DependenciesBase):
             print("A new update avaliable for pip-upgrade-tool.\nPlease manually upgrade the tool using 'python -m pip install -U pip-upgrade-tool'")
             # cprint("A new update avaliable for pip-upgrade-tool.\nPlease manually upgrade the tool using 'python -m pip install -U pip-upgrade-tool'", color='yellow')
 
+    def _upgrade_pip(self):
+        print('Checking pip version for the first run...')
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', 'pip'])
+    
     def _help(self):
         print("")
         print("y              :  Continue")
