@@ -1,5 +1,5 @@
 # pip-upgrade 🎉
-The purpose of pip-upgrade is to be a simple yet robust and reliable tool for upgrading all of your packages while not breaking dependencies
+The purpose of pip-upgrade is to be a simple yet robust and reliable tool for upgrading all of your packages while not breaking dependencies.
 
 ## Installation
 
@@ -42,6 +42,9 @@ You can also exclude packages beforehand. Use `-e` or `--exclude`. The tool won'
 
 ### Permanent Configuration
 When `pip-upgrade` is run for the first time, it will create a file in the user's home directory named `.pipupgrade.ini`. This file can be manually edited by the user for permanent configuration options. The configuration file current consists of two options under the `conf` section, `exclude` and `novenv`. `novenv` is false by default, but if set to true, the `pip-upgrade` command will not require you to be in a virtualenv, which is the same function as the `--novenv` argument. The second option, `exclude`, will take the same values as the `--exclude` argument, but these excluded packages will persist forever until removed. 
+
+### Contributing
+Any contribution is appreciated, please feel free to send pull requests.
 
 #### TODO / known issues
 - Feature - Update directly from Gohlke's packages
