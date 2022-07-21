@@ -40,7 +40,7 @@ class PipUpgrade(DependenciesBase):
         arg_list = [sys.executable, '-m', 'pip', 'list', '--format=json'] + args
 
         packages = subprocess.check_output(arg_list)
-        packages = packages.decode("utf-8").replace("\n", "")
+        packages = packages.decode("utf-8").replace("\n", "").split('\r')[0]
         packages = json.loads(packages)
 
         packages_list = []
@@ -53,7 +53,7 @@ class PipUpgrade(DependenciesBase):
     def check_outdated(self):
         print('Checking outdated packages...')
         reqs = subprocess.check_output([sys.executable, '-m', 'pip', 'list', '--format=json', '--outdated'])
-        reqs = reqs.decode("utf-8").replace("\n", "").replace("\r", "")     # fix here
+        reqs = reqs.decode("utf-8").replace("\n", "").split("\r")[0]
 
         outdated = json.loads(reqs)     # List
 
