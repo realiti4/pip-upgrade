@@ -11,6 +11,9 @@ def version_check(dep, latest_version):
     key = sign_dict[sign]
 
     if key == 0:
+        if '.*' in apply_dep:
+            apply_dep, latest_version = any_version_control(apply_dep, latest_version)
+        
         result = version.parse(apply_dep) == version.parse(latest_version)
     elif key == 1:
         result = version.parse(apply_dep).minor == version.parse(latest_version).minor
@@ -37,3 +40,21 @@ def not_equal_check(version_, latest_version):
         return True
     else:
         return False
+
+def any_version_control(version_, latest_version):
+    dot_count = version_.split('.*')[0].count('.')
+
+    i = 0
+    output_latest_version = ''
+
+    for item in latest_version.split('.'):
+        output_latest_version += item
+
+        if i == dot_count:
+            break
+        else:
+            output_latest_version += '.'
+
+        i += 1
+
+    return version_.split('.*')[0], output_latest_version
