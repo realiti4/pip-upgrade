@@ -20,7 +20,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     packages=["pip_upgrade", "pip_upgrade.tools"],
     install_requires=["packaging"],
 )

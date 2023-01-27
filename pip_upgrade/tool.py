@@ -18,6 +18,10 @@ class PipUpgrade(DependenciesBase):
             if len(config['restore']['last_exclude']) != 0:
                 self.restorable = True
 
+        # Upgrade if it is first run
+        if config.first_run:
+            self._upgrade_pip()
+
         # Exclude editable and user defined packages
         self.excluded_pkgs = [] if self.args.exclude is None else self.args.exclude
         self.excluded_pkgs += self.config['conf']['exclude'].split(' ')
@@ -36,7 +40,7 @@ class PipUpgrade(DependenciesBase):
         arg_list = [sys.executable, '-m', 'pip', 'list', '--format=json'] + args
 
         packages = subprocess.check_output(arg_list)
-        packages = packages.decode("utf-8").replace("\n", "")
+        packages = packages.decode("utf-8").replace("\n", "").split('\r')[0]
         packages = json.loads(packages)
 
         packages_list = []
@@ -49,7 +53,7 @@ class PipUpgrade(DependenciesBase):
     def check_outdated(self):
         print('Checking outdated packages...')
         reqs = subprocess.check_output([sys.executable, '-m', 'pip', 'list', '--format=json', '--outdated'])
-        reqs = reqs.decode("utf-8").replace("\n", "").replace("\r", "")     # fix here
+        reqs = reqs.decode("utf-8").replace("\n", "").split("\r")[0]
 
         outdated = json.loads(reqs)     # List
 
@@ -155,6 +159,10 @@ class PipUpgrade(DependenciesBase):
             print("A new update avaliable for pip-upgrade-tool.\nPlease manually upgrade the tool using 'python -m pip install -U pip-upgrade-tool'")
             # cprint("A new update avaliable for pip-upgrade-tool.\nPlease manually upgrade the tool using 'python -m pip install -U pip-upgrade-tool'", color='yellow')
 
+    def _upgrade_pip(self):
+        print('Checking pip version for the first run...')
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', 'pip'])
+    
     def _help(self):
         print("")
         print("y              :  Continue")
