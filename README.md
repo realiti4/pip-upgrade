@@ -46,6 +46,3 @@ When `pip-upgrade` is run for the first time, it will create a file in the user'
 ### Contributing
 Any contribution is appreciated, please feel free to send pull requests.
 
-#### TODO / known issues
-- Feature - Update directly from Gohlke's packages
-- Feature - Revert to previous point
