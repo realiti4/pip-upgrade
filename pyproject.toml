@@ -1,16 +1,12 @@
-[build-system]
-requires = ["setuptools>=62.6", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "pip-upgrade-tool"
 version = "1.0.0"
+description = "An easy tool for upgrading all of your packages while not breaking dependencies"
+readme = "README.md"
+requires-python = ">=3.12"
 authors = [
     {name = "Onur Cetinkol", email = "realiti44@gmail.com"},
 ]
-description = "An easy tool for upgrading all of your packages while not breaking dependencies"
-readme = "README.md"
-requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -26,8 +22,12 @@ Homepage = "https://github.com/realiti4/pip-upgrade"
 [project.scripts]
 pip-upgrade = "pip_upgrade:main"
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pip_upgrade"]
+
 [tool.ruff]
 line-length = 120
-
-[tool.setuptools]
-packages = ["pip_upgrade", "pip_upgrade.tools"]
