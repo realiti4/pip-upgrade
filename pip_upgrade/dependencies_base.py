@@ -72,7 +72,7 @@ class DependenciesBase:
         Retrieves dependencies pkg_main requires, and puts all dependent packages in self.dict with their version.
         """
         for pkg_main in self.packages:
-            dep_list = pkg_resources.working_set.by_key[canonicalize_name(pkg_main)].requires()
+            dep_list = pkg_resources.working_set.by_key[pkg_main.lower()].requires()
 
             for i in dep_list:
                 name = i.name  # Name of dependency
