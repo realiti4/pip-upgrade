@@ -2,6 +2,8 @@ from pip._vendor import pkg_resources
 from pip_upgrade.version_checker import version_check, not_equal_check
 from pip_upgrade.store import Store
 
+from packaging.utils import canonicalize_name
+
 
 class DependenciesBase:
     def __init__(self):
@@ -18,7 +20,7 @@ class DependenciesBase:
         """
         Creates a dict of Stores class for packages
         """
-        return {x: Store(x) for x in packages}
+        return {canonicalize_name(x): Store(x) for x in packages}
 
     def get_dependencies(self):
         """
@@ -32,18 +34,7 @@ class DependenciesBase:
             current_version = pkg_dict["version"]
             latest_version = pkg_dict["latest_version"]
 
-            try:
-                pkg_store = self.dict[pkg_name]
-            except:
-                try:
-                    pkg_store = self.dict[pkg_name.lower()]
-                except Exception as e:
-                    if "_" in pkg_name:  # Fix for '_'
-                        pkg_name = pkg_name.replace("_", "-")
-                    try:
-                        pkg_store = self.dict[pkg_name]
-                    except Exception as e:
-                        raise e
+            pkg_store = self.dict[canonicalize_name(pkg_name)]
 
             pkg_store.current_version = current_version
             pkg_store.latest_version = latest_version
@@ -81,37 +72,14 @@ class DependenciesBase:
         Retrieves dependencies pkg_main requires, and puts all dependent packages in self.dict with their version.
         """
         for pkg_main in self.packages:
-            try:
-                dep_list = pkg_resources.working_set.by_key[pkg_main].requires()
-            except:
-                dep_list = pkg_resources.working_set.by_key[pkg_main.lower()].requires()
+            dep_list = pkg_resources.working_set.by_key[canonicalize_name(pkg_main)].requires()
 
             for i in dep_list:
                 name = i.name  # Name of dependency
                 specs = i.specs  # Specs of dependency
 
                 if len(specs) != 0:
-                    try:
-                        self.dict[name] += specs
-                    except:
-                        for key in self.dict:
-                            if key.lower() == name.lower():
-                                name = key
-                        try:
-                            self.dict[name] += specs
-                        except Exception as e:
-                            if "_" in name:  # Fix for '_'
-                                name = name.replace("_", "-")
-                            try:
-                                self.dict[name] += specs
-                            except Exception as e:
-                                # raise e
-                                print(
-                                    f"Skipping {name}, warning: Name mismatch. This will be improved. Manually upgrade if needed"
-                                )
+                    canonical_name = canonicalize_name(name)
+                    if canonical_name in self.dict:
+                        self.dict[canonical_name] += specs
 
-    def check_name_in_dict(self):
-        """
-        Case and '_', '-' checks. Returns the true name on dict
-        """
-        return
