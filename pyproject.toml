@@ -3,7 +3,7 @@ name = "pip-upgrade-tool"
 version = "1.0.0"
 description = "An easy tool for upgrading all of your packages while not breaking dependencies"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 authors = [
     {name = "Onur Cetinkol", email = "realiti44@gmail.com"},
 ]
