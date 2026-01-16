@@ -1,11 +1,24 @@
 import sys
 import argparse
 import logging
+from importlib.metadata import version, PackageNotFoundError
 
 from pip_upgrade.tool import PipUpgrade
 from pip_upgrade.tools import Config, cprint, clear_cache
 
-parser = argparse.ArgumentParser()
+
+def _get_version() -> str:
+    try:
+        return version("pip-upgrade-tool")
+    except PackageNotFoundError:
+        return "unknown (not installed)"
+
+
+parser = argparse.ArgumentParser(
+    prog="pip-upgrade",
+    description="An easy tool for upgrading all of your packages while not breaking dependencies"
+)
+parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {_get_version()}")
 parser.add_argument("-e", "--exclude", nargs="+", help="Exclude packages you don't want to upgrade")
 parser.add_argument("--local", action="store_true", help="Upgrades local packages as well")
 parser.add_argument("--novenv", action="store_true", help="Disables venv check")
