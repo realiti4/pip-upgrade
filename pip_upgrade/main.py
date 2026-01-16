@@ -29,6 +29,9 @@ parser.add_argument("--reset-config", action="store_true", help="Reset config fi
 parser.add_argument("--dev", action="store_true", help="Doesn't actually call upgrade at the end")
 parser.add_argument("--no-cache", action="store_true", help="Disable Redis cache in dev mode")
 parser.add_argument("-q", "--query", help="Query package dependency info from pypi")
+parser.add_argument("--respect-extras", action="store_true",
+    help="Respect version constraints from optional dependencies (extras). "
+         "By default, extras are ignored since Python cannot track which extras are installed.")
 
 args = parser.parse_args()
 

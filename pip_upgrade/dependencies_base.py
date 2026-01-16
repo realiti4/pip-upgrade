@@ -7,7 +7,8 @@ from pip_upgrade.store import Store
 
 
 class DependenciesBase:
-    def __init__(self):
+    def __init__(self, respect_extras=False):
+        self.respect_extras = respect_extras
         self.self_check = False
 
         self.packages = [dist.metadata['Name'] for dist in distributions()]
@@ -96,9 +97,12 @@ class DependenciesBase:
                     is_extra_marker = 'extra' in marker_str
 
                     if is_extra_marker:
-                        # For extras: include constraint since the package is installed
-                        # (we already checked canonical_name in self.dict above)
-                        pass
+                        if not self.respect_extras:
+                            # Skip extra-marked dependencies by default - we can't determine
+                            # if the extra is actually installed, and optional dependencies
+                            # shouldn't block upgrades
+                            continue
+                        # If respect_extras=True, fall through and apply the constraint
                     else:
                         # For python_version, platform, etc: evaluate against current env
                         if not req.marker.evaluate():

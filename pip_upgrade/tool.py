@@ -10,7 +10,9 @@ from pip_upgrade.cache import RedisCache, get_env_hash
 
 class PipUpgrade(DependenciesBase):
     def __init__(self, args, config):
-        super(PipUpgrade, self).__init__()
+        super(PipUpgrade, self).__init__(
+            respect_extras=getattr(args, 'respect_extras', False)
+        )
         self.args = args
         self.config = config
         self.colored = (
