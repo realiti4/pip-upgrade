@@ -14,6 +14,7 @@ parser.add_argument("--clean", action="store_true", help="Clears pip's cache")
 parser.add_argument("-y", "--yes", action="store_true", help="Accept all upgrades and skip user prompt")
 parser.add_argument("--reset-config", action="store_true", help="Reset config file to default")
 parser.add_argument("--dev", action="store_true", help="Doesn't actually call upgrade at the end")
+parser.add_argument("--no-cache", action="store_true", help="Disable Redis cache in dev mode")
 parser.add_argument("-q", "--query", help="Query package dependency info from pypi")
 
 args = parser.parse_args()

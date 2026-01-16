@@ -1,6 +1,6 @@
 [project]
 name = "pip-upgrade-tool"
-version = "1.0.2"
+version = "1.1.0b1"
 description = "An easy tool for upgrading all of your packages while not breaking dependencies"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -16,6 +16,9 @@ dependencies = [
     "packaging",
 ]
 
+[project.optional-dependencies]
+dev = ["redis"]
+
 [project.urls]
 Homepage = "https://github.com/realiti4/pip-upgrade"
 
@@ -28,6 +31,3 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["pip_upgrade"]
-
-[tool.ruff]
-line-length = 120
