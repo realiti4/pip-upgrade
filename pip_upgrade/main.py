@@ -32,6 +32,9 @@ parser.add_argument("-q", "--query", help="Query package dependency info from py
 parser.add_argument("--respect-extras", action="store_true",
     help="Respect version constraints from optional dependencies (extras). "
          "By default, extras are ignored since Python cannot track which extras are installed.")
+parser.add_argument("--experimental", action="store_true",
+    help="Enable experimental heuristic extras detection. "
+         "Infers which extras are active by checking if all their dependencies are installed.")
 
 args = parser.parse_args()
 

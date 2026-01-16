@@ -1,3 +1,4 @@
+import re
 from importlib.metadata import distribution, distributions
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
@@ -7,8 +8,9 @@ from pip_upgrade.store import Store
 
 
 class DependenciesBase:
-    def __init__(self, respect_extras=False):
+    def __init__(self, respect_extras=False, experimental=False):
         self.respect_extras = respect_extras
+        self.experimental = experimental
         self.self_check = False
 
         self.packages = [dist.metadata['Name'] for dist in distributions()]
@@ -23,6 +25,39 @@ class DependenciesBase:
         Creates a dict of Stores class for packages
         """
         return {canonicalize_name(x): Store(x) for x in packages}
+
+    def _extract_extra_name(self, marker) -> str | None:
+        """Extract extra name from marker like 'extra == "plot"'"""
+        match = re.search(r'extra\s*==\s*["\']([^"\']+)["\']', str(marker))
+        return match.group(1) if match else None
+
+    def infer_active_extras(self, pkg_name: str) -> set[str]:
+        """
+        Heuristically determine which extras are likely active.
+        An extra is considered active if ALL its optional deps are installed.
+        """
+        dist = distribution(pkg_name)
+        requires = dist.requires or []
+
+        # Build map: extra_name -> set of required package names
+        extras_deps: dict[str, set[str]] = {}
+
+        for req_str in requires:
+            req = Requirement(req_str)
+            if req.marker and 'extra' in str(req.marker):
+                extra_name = self._extract_extra_name(req.marker)
+                if extra_name:
+                    extras_deps.setdefault(extra_name, set()).add(
+                        canonicalize_name(req.name)
+                    )
+
+        # Check which extras have ALL their deps installed
+        active_extras = set()
+        for extra, deps in extras_deps.items():
+            if deps and all(dep in self.dict for dep in deps):
+                active_extras.add(extra)
+
+        return active_extras
 
     def get_dependencies(self):
         """
@@ -73,6 +108,8 @@ class DependenciesBase:
         """
         Retrieves dependencies pkg_main requires, and puts all dependent packages in self.dict with their version.
         """
+        active_extras_cache: dict[str, set[str]] = {}
+
         for pkg_main in self.packages:
             dist = distribution(pkg_main)
             requires = dist.requires or []
@@ -97,12 +134,21 @@ class DependenciesBase:
                     is_extra_marker = 'extra' in marker_str
 
                     if is_extra_marker:
-                        if not self.respect_extras:
-                            # Skip extra-marked dependencies by default - we can't determine
-                            # if the extra is actually installed, and optional dependencies
-                            # shouldn't block upgrades
+                        if self.respect_extras:
+                            # respect_extras=True: apply all extra constraints
+                            pass  # Fall through to apply constraint
+                        elif self.experimental:
+                            # Experimental: heuristic check if this extra is likely active
+                            if pkg_main not in active_extras_cache:
+                                active_extras_cache[pkg_main] = self.infer_active_extras(pkg_main)
+
+                            extra_name = self._extract_extra_name(req.marker)
+                            if extra_name not in active_extras_cache[pkg_main]:
+                                continue  # Skip - this extra isn't active
+                            # Fall through to apply constraint
+                        else:
+                            # Default: skip all extra-marked dependencies
                             continue
-                        # If respect_extras=True, fall through and apply the constraint
                     else:
                         # For python_version, platform, etc: evaluate against current env
                         if not req.marker.evaluate():
