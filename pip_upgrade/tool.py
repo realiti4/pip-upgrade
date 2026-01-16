@@ -5,6 +5,7 @@ import subprocess
 
 from pip_upgrade.dependencies_base import DependenciesBase
 from pip_upgrade.tools import cprint
+from pip_upgrade.cache import RedisCache, get_env_hash
 
 
 class PipUpgrade(DependenciesBase):
@@ -12,7 +13,9 @@ class PipUpgrade(DependenciesBase):
         super(PipUpgrade, self).__init__()
         self.args = args
         self.config = config
-        self.colored = "\033[32m" if config["conf"]["disable_colors"] == "false" else "\033[m"
+        self.colored = (
+            "\033[32m" if config["conf"]["disable_colors"] == "false" else "\033[m"
+        )
         self.restorable = False
         if "restore" in config.config:
             if len(config["restore"]["last_exclude"]) != 0:
@@ -26,7 +29,14 @@ class PipUpgrade(DependenciesBase):
         self.excluded_pkgs = [] if self.args.exclude is None else self.args.exclude
         self.excluded_pkgs += self.config["conf"]["exclude"].split(" ")
         if not self.args.local:  # Exclude editable packages
-            self.excluded_pkgs = self.get_packages(args=["--editable"]) + self.excluded_pkgs
+            self.excluded_pkgs = (
+                self.get_packages(args=["--editable"]) + self.excluded_pkgs
+            )
+
+        # Initialize Redis cache for dev mode
+        self.cache = None
+        if self.args.dev and not getattr(self.args, 'no_cache', False):
+            self.cache = RedisCache()
 
         self.self_check = False
         self.outdated = self.check_outdated()
@@ -52,10 +62,27 @@ class PipUpgrade(DependenciesBase):
 
     def check_outdated(self):
         print("Checking outdated packages...")
-        reqs = subprocess.check_output([sys.executable, "-m", "pip", "list", "--format=json", "--outdated"])
-        reqs = reqs.decode("utf-8").replace("\n", "").split("\r")[0]
 
-        outdated = json.loads(reqs)  # List
+        cache_key = f"outdated:{get_env_hash()}"
+        outdated = None
+
+        # Try to get from cache in dev mode
+        if self.cache:
+            outdated = self.cache.get(cache_key)
+            if outdated is not None:
+                print("(using cached results)")
+
+        # Fetch from pip if not cached
+        if outdated is None:
+            reqs = subprocess.check_output(
+                [sys.executable, "-m", "pip", "list", "--format=json", "--outdated"]
+            )
+            reqs = reqs.decode("utf-8").replace("\n", "").split("\r")[0]
+            outdated = json.loads(reqs)  # List
+
+            # Cache the result in dev mode
+            if self.cache:
+                self.cache.set(cache_key, outdated)
 
         # Exclude package itself
         for i, item in enumerate(outdated):
@@ -83,7 +110,9 @@ class PipUpgrade(DependenciesBase):
                 main.pop(item)
             else:
                 if check_input_error:
-                    raise Exception(f"{item} is not in upgradable packages. This error is for safety incase of typos")
+                    raise Exception(
+                        f"{item} is not in upgradable packages. This error is for safety incase of typos"
+                    )
         return main
 
     def user_prompt(self, packages):
@@ -119,7 +148,9 @@ class PipUpgrade(DependenciesBase):
             self._help()
             cont_upgrade = self.user_prompt(packages)
         else:
-            print("Please use one of the accepted inputs (y/n or -e PackageNames)\nCanceling...")
+            print(
+                "Please use one of the accepted inputs (y/n or -e PackageNames)\nCanceling..."
+            )
             cont_upgrade = False
 
         return cont_upgrade
@@ -138,7 +169,11 @@ class PipUpgrade(DependenciesBase):
 
         if len(packages) > 0:
             # Info
-            cprint("These packages will be upgraded: ", list(packages.keys()), color="green")
+            cprint(
+                "These packages will be upgraded: ",
+                list(packages.keys()),
+                color="green",
+            )
             if self.restorable:
                 restore = self.config["restore"]["last_exclude"]
                 print(f"(-r, --repeat  :  -e {restore})")
@@ -151,7 +186,9 @@ class PipUpgrade(DependenciesBase):
             packages = ["".join(x) for x in packages]
 
             if cont_upgrade and not self.args.dev:
-                subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", *packages])
+                subprocess.check_call(
+                    [sys.executable, "-m", "pip", "install", "-U", *packages]
+                )
 
         print("All packages are up to date! 🎉")
 
@@ -169,6 +206,8 @@ class PipUpgrade(DependenciesBase):
         print("")
         print("y              :  Continue")
         print("n              :  Abort")
-        print("-e, --exclude  :  Exclude packages and continue. Example: -e pytest hypothesis")
+        print(
+            "-e, --exclude  :  Exclude packages and continue. Example: -e pytest hypothesis"
+        )
         print("-r, --repeat   :  Repeat previous excluded pkgs")
         print("")
