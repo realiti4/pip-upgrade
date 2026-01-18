@@ -30,11 +30,11 @@ parser.add_argument("--dev", action="store_true", help="Doesn't actually call up
 parser.add_argument("--no-cache", action="store_true", help="Disable Redis cache in dev mode")
 parser.add_argument("-q", "--query", help="Query package dependency info from pypi")
 parser.add_argument("--respect-extras", action="store_true",
-    help="Respect version constraints from optional dependencies (extras). "
-         "By default, extras are ignored since Python cannot track which extras are installed.")
-parser.add_argument("--experimental", action="store_true",
-    help="Enable experimental heuristic extras detection. "
-         "Infers which extras are active by checking if all their dependencies are installed.")
+    help="Respect ALL version constraints from optional dependencies (extras). "
+         "More restrictive than the default heuristic detection.")
+parser.add_argument("--no-extras", action="store_true",
+    help="Skip all extra-marked dependencies. "
+         "By default, extras are detected heuristically by checking if their dependencies are installed.")
 
 args = parser.parse_args()
 

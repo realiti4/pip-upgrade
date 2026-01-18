@@ -3,6 +3,8 @@ import sys
 import json
 import subprocess
 
+from packaging.utils import canonicalize_name
+
 from pip_upgrade.dependencies_base import DependenciesBase
 from pip_upgrade.tools import cprint
 from pip_upgrade.cache import RedisCache, get_env_hash
@@ -12,7 +14,7 @@ class PipUpgrade(DependenciesBase):
     def __init__(self, args, config):
         super(PipUpgrade, self).__init__(
             respect_extras=getattr(args, 'respect_extras', False),
-            experimental=getattr(args, 'experimental', False)
+            no_extras=getattr(args, 'no_extras', False)
         )
         self.args = args
         self.config = config
@@ -172,11 +174,15 @@ class PipUpgrade(DependenciesBase):
 
         if len(packages) > 0:
             # Info
-            cprint(
-                "These packages will be upgraded: ",
-                list(packages.keys()),
-                color="green",
-            )
+            cprint("These packages will be upgraded:", color="green")
+            print()
+            max_name = max(len(name) for name in packages.keys())
+            for name in packages.keys():
+                pkg_store = self.dict[canonicalize_name(name)]
+                current = getattr(pkg_store, 'current_version', '?')
+                target = getattr(pkg_store, 'latest_version', '?')
+                print(f"  {name:<{max_name}}  {current}  →  {target}")
+            print()
             if self.restorable:
                 restore = self.config["restore"]["last_exclude"]
                 print(f"(-r, --repeat  :  -e {restore})")

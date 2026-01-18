@@ -1,11 +1,11 @@
 [project]
 name = "pip-upgrade-tool"
-version = "1.1.0b3"
+version = "1.1.0"
 description = "An easy tool for upgrading all of your packages while not breaking dependencies"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [
-    {name = "Onur Cetinkol", email = "realiti44@gmail.com"},
+    {name = "Onur Cetinkol", email = "onurcetinkol@gmail.com"},
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -16,8 +16,9 @@ dependencies = [
     "packaging",
 ]
 
-[project.optional-dependencies]
-dev = ["redis"]
+[dependency-groups]
+dev = ["pip", "redis"]
+test = ["pytest"]
 
 [project.urls]
 Homepage = "https://github.com/realiti4/pip-upgrade"

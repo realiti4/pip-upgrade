@@ -6,11 +6,14 @@ from packaging.utils import canonicalize_name
 from pip_upgrade.version_checker import version_check, not_equal_check
 from pip_upgrade.store import Store
 
+from pip._vendor import pkg_resources
 
 class DependenciesBase:
-    def __init__(self, respect_extras=False, experimental=False):
+    MIN_DEPS_FOR_HEURISTIC = 2
+
+    def __init__(self, respect_extras=False, no_extras=False):
         self.respect_extras = respect_extras
-        self.experimental = experimental
+        self.no_extras = no_extras
         self.self_check = False
 
         self.packages = [dist.metadata['Name'] for dist in distributions()]
@@ -34,7 +37,8 @@ class DependenciesBase:
     def infer_active_extras(self, pkg_name: str) -> set[str]:
         """
         Heuristically determine which extras are likely active.
-        An extra is considered active if ALL its optional deps are installed.
+        An extra is considered active if ALL its optional deps are installed
+        and it has at least MIN_DEPS_FOR_HEURISTIC dependencies.
         """
         dist = distribution(pkg_name)
         requires = dist.requires or []
@@ -51,10 +55,10 @@ class DependenciesBase:
                         canonicalize_name(req.name)
                     )
 
-        # Check which extras have ALL their deps installed
+        # Check which extras have ALL their deps installed (with minimum threshold)
         active_extras = set()
         for extra, deps in extras_deps.items():
-            if deps and all(dep in self.dict for dep in deps):
+            if len(deps) >= self.MIN_DEPS_FOR_HEURISTIC and all(dep in self.dict for dep in deps):
                 active_extras.add(extra)
 
         return active_extras
@@ -137,8 +141,11 @@ class DependenciesBase:
                         if self.respect_extras:
                             # respect_extras=True: apply all extra constraints
                             pass  # Fall through to apply constraint
-                        elif self.experimental:
-                            # Experimental: heuristic check if this extra is likely active
+                        elif self.no_extras:
+                            # no_extras=True: skip all extra-marked dependencies
+                            continue
+                        else:
+                            # Default: heuristic check if this extra is likely active
                             if pkg_main not in active_extras_cache:
                                 active_extras_cache[pkg_main] = self.infer_active_extras(pkg_main)
 
@@ -146,9 +153,6 @@ class DependenciesBase:
                             if extra_name not in active_extras_cache[pkg_main]:
                                 continue  # Skip - this extra isn't active
                             # Fall through to apply constraint
-                        else:
-                            # Default: skip all extra-marked dependencies
-                            continue
                     else:
                         # For python_version, platform, etc: evaluate against current env
                         if not req.marker.evaluate():
