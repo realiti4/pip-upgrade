@@ -16,8 +16,12 @@ Just run `pip-upgrade` in your terminal while virtualenv is active.
 
 ```
 Checking outdated packages...
-These packages will be upgraded: ['colorama', 'isort']
-Continue? (y/n): y
+These packages will be upgraded:
+
+  flake8    7.1.2  →  7.3.0
+  tinycss2  1.4.0  →  1.5.1
+
+Continue? (y/n or -e/-r/--help): y
 ...
 All packages are up to date! 🎉
 ```
