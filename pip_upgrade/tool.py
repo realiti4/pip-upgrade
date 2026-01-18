@@ -14,7 +14,7 @@ class PipUpgrade(DependenciesBase):
     def __init__(self, args, config):
         super(PipUpgrade, self).__init__(
             respect_extras=getattr(args, 'respect_extras', False),
-            experimental=getattr(args, 'experimental', False)
+            no_extras=getattr(args, 'no_extras', False)
         )
         self.args = args
         self.config = config
